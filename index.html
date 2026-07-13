@@ -17,6 +17,7 @@
             --yellow: #f59e0b;
             --yellow-glow: rgba(245, 158, 11, 0.3);
             --red: #ef4444;
+            --red-glow: rgba(239, 68, 68, 0.4);
             --purple: #a855f7;
             --purple-glow: rgba(168, 85, 247, 0.4);
             --text-muted: rgba(156, 163, 175, 0.8);
@@ -73,7 +74,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* 円形タイマー（レスポンシブ・サイズはみ出しを完全ガード） */
+        /* 円形タイマー */
         .timer {
             display: flex;
             justify-content: center;
@@ -158,7 +159,7 @@
             border-radius: 12px;
             margin-bottom: 20px;
             text-align: center;
-            display: none;
+            display: none; /* JSで動的制御 */
             animation: fadeIn 0.4s ease-out;
         }
 
@@ -195,6 +196,10 @@
         /* セクション設計 */
         .section {
             margin-top: 24px;
+        }
+
+        .section.hidden-section {
+            display: none !important;
         }
 
         .title {
@@ -456,6 +461,10 @@
                             <stop offset="0%" stop-color="#a855f7"/>
                             <stop offset="100%" stop-color="#10b981"/>
                         </linearGradient>
+                        <linearGradient id="color-sleep">
+                            <stop offset="0%" stop-color="#ef4444"/>
+                            <stop offset="100%" stop-color="#a855f7"/>
+                        </linearGradient>
                     </defs>
                     <circle class="bg-circle" cx="140" cy="140" r="110"/>
                     <circle id="progress" class="progress-circle" cx="140" cy="140" r="110"/>
@@ -470,7 +479,7 @@
 
         <div class="status" id="status">SYSTEM READY</div>
 
-        <!-- 授業終了後のお疲れ様メッセージエリア -->
+        <!-- 授業終了後のお疲れ様メッセージエリア (14:20以降は非表示に制御) -->
         <div class="after-school-card" id="after-school-msg">
             <div class="after-school-title">✨ TODAY'S LESSONS COMPLETED ✨</div>
             <div class="after-school-text" id="after-school-text">
@@ -478,9 +487,9 @@
             </div>
         </div>
 
-        <!-- 今日のみらいの架け橋レッスン -->
-        <div class="section">
-            <div class="title mirakake-title">🎨 今日のみらいの架け橋レッスン (12:50〜)</div>
+        <!-- 今日のみらいの架け橋レッスン (14:20以降は非表示に制御) -->
+        <div class="section" id="mirakake-today-section">
+            <div class="title mirakake-title">🎨 今日のみらいの架け橋レッスン (12:50〜14:20)</div>
             <div id="mirakake-today" class="box"></div>
         </div>
 
@@ -528,7 +537,7 @@
         { name: "3限", start: "11:20", end: "12:10" }
     ];
 
-    // --- 【カレンダーグリッド完全トレース版】みらいの架け橋レッスン日程表 ---
+    // --- みらいの架け橋レッスン日程表 ---
     const mirakakeSchedule = {
         "2026-07-01": [
             { name: "心理学", room: "9B" },
@@ -607,7 +616,7 @@
     const clockEl = document.getElementById("clock");
     const statusEl = document.getElementById("status");
     const remainEl = document.getElementById("remain");
-    const afterSchoolMsg = document.getElementById("after-school-msg");
+    const afterSchoolCard = document.getElementById("after-school-msg");
     const afterSchoolText = document.getElementById("after-school-text");
 
     progress.style.strokeDasharray = circleLength;
@@ -640,6 +649,12 @@
         let left = 99999;
         let isBreak = false;
         let isFinished = false;
+        let isSleepTime = false;
+
+        // 夜21:00 (75600秒) から 翌朝5:00 (18000秒) の睡眠推奨モード
+        if (nowSec >= 21 * 3600 || nowSec < 5 * 3600) {
+            isSleepTime = true;
+        }
 
         if (dayOfWeek === 0 || dayOfWeek === 6) {
             msg = "🍵 休日のため授業はありません";
@@ -658,13 +673,13 @@
                     const diffSec = startSec - nowSec;
                     msg = "⚡️ 放課後 / お昼休み";
                     rem = `みらかけ開始(12:50)まで ${Math.floor(diffSec / 60)}分 ${String(diffSec % 60).padStart(2, "0")}秒`;
-                } else if (nowSec < 15 * 3600 + 30 * 60) {
+                } else if (nowSec < 14 * 3600 + 20 * 60) {
                     msg = "✨ みらいの架け橋レッスン実施中";
-                    rem = "12:50〜 みらかけを楽しもう！";
+                    rem = "14:20 終了予定";
                 } else if (nowSec < 18 * 3600) {
                     msg = "🌅 放課後 / 下校時間";
                     rem = "帰り道、気をつけてね！";
-                } else {
+                } else if (!isSleepTime) {
                     msg = "🌌 今日も一日お疲れ様でした！";
                     rem = "しっかり体を休めましょう";
                 }
@@ -702,24 +717,21 @@
             }
         }
 
-        if (isFinished) {
+        // 深夜睡眠モードの最優先割込
+        if (isSleepTime) {
+            msg = "💤 夜更かしはサイバーウェアに毒だぞ！";
+            rem = "はよ寝ろ！明日に響くぞ！😴";
+            progress.style.stroke = "url(#color-sleep)";
+            document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--red-glow))";
+        } else if (isFinished) {
             progress.style.stroke = "url(#color-finished)";
             document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--purple-glow))";
-            
-            afterSchoolMsg.classList.add("active");
-            if (dayOfWeek === 0 || dayOfWeek === 6) {
-                afterSchoolText.textContent = "週末はリフレッシュして、また来週元気にお会いしましょう！🌈";
-            } else {
-                afterSchoolText.textContent = "今日の通常授業は無事完了しました！12:50からのみらいの架け橋レッスンで自分だけのアートやスポーツを楽しみましょう！✨";
-            }
         } else if (isBreak) {
             progress.style.stroke = "url(#color-break)";
             document.querySelector('svg').style.filter = "drop-shadow(0 0 10px rgba(59, 130, 246, 0.4))";
-            afterSchoolMsg.classList.remove("active");
         } else {
             progress.style.stroke = "url(#color-class)";
             document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--cyan-glow))";
-            afterSchoolMsg.classList.remove("active");
         }
 
         statusEl.textContent = msg;
@@ -730,6 +742,24 @@
             remainEl.classList.add("flash");
         } else {
             remainEl.classList.remove("flash");
+        }
+
+        // 14:20（みらかけレッスン終了時刻）のセクション＆コメント制御
+        const mirakakeSection = document.getElementById("mirakake-today-section");
+        const mirakakeLimitSec = 14 * 3600 + 20 * 60; // 14:20
+
+        // 12:10から14:20までの間はお疲れ様コメントと今日のみらかけを連動して表示する
+        if (nowSec >= lastLessonEnd && nowSec < mirakakeLimitSec && dayOfWeek !== 0 && dayOfWeek !== 6) {
+            // お疲れ様メッセージカードを表示
+            afterSchoolCard.classList.add("active");
+            afterSchoolText.textContent = "授業お疲れ様でした！この後は12:50から始まる「みらいの架け橋レッスン」を楽しみましょう！✨";
+            
+            // 今日のみらかけセクションを表示
+            mirakakeSection.classList.remove("hidden-section");
+        } else {
+            // 14:20以降、あるいは授業中、もしくは休日は非表示にする
+            afterSchoolCard.classList.remove("active");
+            mirakakeSection.classList.add("hidden-section");
         }
     }
 
@@ -773,7 +803,7 @@
                         </div>
                         <div class="keyword-footer" style="font-size: 10px; margin-top: 6px; padding-top: 4px;">
                             <span>教室: <strong>${item.room}</strong></span>
-                            <span>⏰ 12:50〜</span>
+                            <span>⏰ 12:50〜14:20</span>
                         </div>
                     </div>
                 `;
@@ -804,7 +834,7 @@
                 listHtml += `
                     <div class="mirakake-item-compact">
                         <div class="mirakake-item-name">${item.name}</div>
-                        <div class="mirakake-item-room">🚪 ${item.room} | 12:50〜</div>
+                        <div class="mirakake-item-room">🚪 ${item.room} | 12:50〜14:20</div>
                     </div>
                 `;
             });
