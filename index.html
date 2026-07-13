@@ -159,7 +159,7 @@
             border-radius: 12px;
             margin-bottom: 20px;
             text-align: center;
-            display: none; /* JSで動的制御 */
+            display: none;
             animation: fadeIn 0.4s ease-out;
         }
 
@@ -416,19 +416,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* システム同期情報エリア */
-        .system-notice {
-            font-size: 10px;
-            color: var(--yellow);
-            text-align: center;
-            margin-top: 4px;
-            display: none;
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px dashed var(--yellow);
-            padding: 4px;
-            border-radius: 6px;
-        }
-
         @media (max-width: 600px) {
             .wrapper { padding: 8px 6px; }
             .card { padding: 12px; border-radius: 12px; }
@@ -493,14 +480,15 @@
             <div id="mirakake-today" class="box"></div>
         </div>
 
-        <div class="section">
+        <!-- 今日のキーワード（授業・登下校含む：常に表示） -->
+        <div class="section" id="today-keywords-section">
             <div class="title">✨ 今日のキーワード</div>
             <div id="today" class="box"></div>
             <div id="demo-notice" class="system-notice"></div>
         </div>
 
-        <!-- みらかけレッスンスケジュール一覧 -->
-        <div class="section">
+        <!-- みらかけレッスンスケジュール一覧（常に表示） -->
+        <div class="section" id="mirakake-list-section">
             <div class="title mirakake-title">📅 7月みらかけ予定表 (〜7/17)</div>
             <button class="mirakake-accordion-btn" id="accordion-btn" onclick="toggleMirakakeList()">
                 <span>📋 全ての日程と教室をみる</span>
@@ -651,7 +639,7 @@
         let isFinished = false;
         let isSleepTime = false;
 
-        // 夜21:00 (75600秒) から 翌朝5:00 (18000秒) の睡眠推奨モード
+        // 【修正】夜21:00以降 〜 翌朝5:00までをお休み（はよ寝ろ）モードとする
         if (nowSec >= 21 * 3600 || nowSec < 5 * 3600) {
             isSleepTime = true;
         }
@@ -717,21 +705,29 @@
             }
         }
 
-        // 深夜睡眠モードの最優先割込
+        // 深夜睡眠モードの最優先割込 (21:00以降のみ稼働)
         if (isSleepTime) {
             msg = "💤 夜更かしはサイバーウェアに毒だぞ！";
             rem = "はよ寝ろ！明日に響くぞ！😴";
             progress.style.stroke = "url(#color-sleep)";
-            document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--red-glow))";
+            if (document.querySelector('svg')) {
+                document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--red-glow))";
+            }
         } else if (isFinished) {
             progress.style.stroke = "url(#color-finished)";
-            document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--purple-glow))";
+            if (document.querySelector('svg')) {
+                document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--purple-glow))";
+            }
         } else if (isBreak) {
             progress.style.stroke = "url(#color-break)";
-            document.querySelector('svg').style.filter = "drop-shadow(0 0 10px rgba(59, 130, 246, 0.4))";
+            if (document.querySelector('svg')) {
+                document.querySelector('svg').style.filter = "drop-shadow(0 0 10px rgba(59, 130, 246, 0.4))";
+            }
         } else {
             progress.style.stroke = "url(#color-class)";
-            document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--cyan-glow))";
+            if (document.querySelector('svg')) {
+                document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--cyan-glow))";
+            }
         }
 
         statusEl.textContent = msg;
@@ -744,22 +740,30 @@
             remainEl.classList.remove("flash");
         }
 
-        // 14:20（みらかけレッスン終了時刻）のセクション＆コメント制御
+        // --- 14:20（みらかけレッスン終了時刻）に合わせたセクション制御 ---
         const mirakakeSection = document.getElementById("mirakake-today-section");
+        const lastLessonEndSec = sec(schedule[schedule.length - 1].end); // 12:10
         const mirakakeLimitSec = 14 * 3600 + 20 * 60; // 14:20
 
-        // 12:10から14:20までの間はお疲れ様コメントと今日のみらかけを連動して表示する
-        if (nowSec >= lastLessonEnd && nowSec < mirakakeLimitSec && dayOfWeek !== 0 && dayOfWeek !== 6) {
-            // お疲れ様メッセージカードを表示
-            afterSchoolCard.classList.add("active");
-            afterSchoolText.textContent = "授業お疲れ様でした！この後は12:50から始まる「みらいの架け橋レッスン」を楽しみましょう！✨";
-            
-            // 今日のみらかけセクションを表示
-            mirakakeSection.classList.remove("hidden-section");
+        // お疲れ様コメントは12:10〜14:20の間、平日のみ表示（みらかけ終了まで表示）
+        if (nowSec >= lastLessonEndSec && nowSec < mirakakeLimitSec && dayOfWeek !== 0 && dayOfWeek !== 6) {
+            if (afterSchoolCard) {
+                afterSchoolCard.classList.add("active");
+                afterSchoolText.textContent = "通常授業お疲れ様でした！この後は12:50から始まる「みらいの架け橋レッスン」を楽しみましょう！✨";
+            }
         } else {
-            // 14:20以降、あるいは授業中、もしくは休日は非表示にする
-            afterSchoolCard.classList.remove("active");
-            mirakakeSection.classList.add("hidden-section");
+            if (afterSchoolCard) {
+                afterSchoolCard.classList.remove("active");
+            }
+        }
+
+        // 今日のみらかけセクションも14:20を過ぎたら非表示に制御
+        if (mirakakeSection) {
+            if (nowSec >= mirakakeLimitSec || dayOfWeek === 0 || dayOfWeek === 6) {
+                mirakakeSection.classList.add("hidden-section");
+            } else {
+                mirakakeSection.classList.remove("hidden-section");
+            }
         }
     }
 
@@ -815,7 +819,7 @@
                 </div>
             `;
         }
-        todayBox.innerHTML = todayHtml;
+        if (todayBox) todayBox.innerHTML = todayHtml;
 
         let listHtml = "";
         const dates = Object.keys(mirakakeSchedule).sort();
@@ -842,7 +846,7 @@
             listHtml += `</div></div>`;
         });
 
-        listEl.innerHTML = listHtml;
+        if (listEl) listEl.innerHTML = listHtml;
     }
 
     function toggleMirakakeList() {
@@ -885,17 +889,19 @@
             
             try {
                 data = JSON.parse(responseText);
-                noticeEl.style.display = 'none';
+                if (noticeEl) noticeEl.style.display = 'none';
             } catch (jsonErr) {
                 console.error("パース失敗。GAS応答:", responseText);
-                throw new Error("GASがJSON以外のデータを返しました。デプロイ権限を確認してください。");
+                throw new Error("GASがJSON以外のデータを返しました。");
             }
 
         } catch (e) {
             console.warn("GAS通信オフライン。デモデータをセットします:", e.message);
             errorDetail = e.message;
-            noticeEl.innerHTML = `⚠️ サーバー非同期（デモデータ稼働中）<br><span style="font-size:10px; opacity:0.85;">事由: ${errorDetail}</span>`;
-            noticeEl.style.display = 'block';
+            if (noticeEl) {
+                noticeEl.innerHTML = `⚠️ サーバー非同期（デモデータ稼働中）<br><span style="font-size:10px; opacity:0.85;">事由: ${errorDetail}</span>`;
+                noticeEl.style.display = 'block';
+            }
 
             const today = new Date();
             const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
@@ -924,7 +930,7 @@
         } else {
             todayHTML = `<div class="keyword" style="grid-column: 1/-1; text-align: center; color: var(--text-muted); font-size: 11px; padding: 10px;">本日のデータはまだ登録されていません</div>`;
         }
-        todayBox.innerHTML = todayHTML;
+        if (todayBox) todayBox.innerHTML = todayHTML;
 
         let historyHTML = "";
         const pastDates = Object.keys(groups)
@@ -948,7 +954,7 @@
         } else {
             historyHTML = `<div class="keyword" style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 10px;">過去3日間のデータ履歴はありません</div>`;
         }
-        historyBox.innerHTML = historyHTML;
+        if (historyBox) historyBox.innerHTML = historyHTML;
     }
 
     function createCard(item) {
@@ -986,11 +992,13 @@
         `;
     }
 
+    // 初回起動
     tick();
-    setInterval(tick, 1000);
     loadKeywords();
     loadMirakake();
 
+    // 定期アップデート
+    setInterval(tick, 1000);
     setInterval(loadKeywords, 45000);
 </script>
 </body>
