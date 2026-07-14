@@ -20,6 +20,43 @@
             --purple: #a855f7;
             --purple-glow: rgba(168, 85, 247, 0.4);
             --text-muted: rgba(156, 163, 175, 0.8);
+            --text-main: #f3f4f6;
+        }
+
+        /* ーーー アクセシビリティ・テーマ設定 ーーー */
+        body.theme-dark {
+            --bg-dark: #0a0a0a;
+            --panel-bg: #121212;
+            --panel-border: #262626;
+            --cyan: #38bdf8;
+            --purple: #c084fc;
+        }
+        body.theme-light {
+            --bg-dark: #f3f4f6;
+            --panel-bg: #ffffff;
+            --panel-border: #d1d5db;
+            --cyan: #0284c7;
+            --green: #16a34a;
+            --yellow: #d97706;
+            --red: #dc2626;
+            --purple: #9333ea;
+            --text-muted: #4b5563;
+            --text-main: #1f2937;
+            background: #f3f4f6;
+            color: var(--text-main);
+        }
+        body.theme-highcontrast {
+            --bg-dark: #000000;
+            --panel-bg: #000000;
+            --panel-border: #ffffff;
+            --cyan: #00ffff;
+            --green: #00ff00;
+            --yellow: #ffff00;
+            --red: #ff0000;
+            --purple: #ff00ff;
+            --text-muted: #ffffff;
+            --text-main: #ffffff;
+            background: #000000;
         }
 
         * {
@@ -30,8 +67,8 @@
         body {
             margin: 0;
             min-height: 100vh;
-            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans JP", sans-serif;
-            color: #f3f4f6;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            color: var(--text-main);
             background: radial-gradient(circle at 50% 10%, #0f172a 0%, var(--bg-dark) 70%);
             background-attachment: fixed;
             line-height: 1.5;
@@ -54,6 +91,26 @@
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
+        /* アクセシビリティバー */
+        .accessibility-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--panel-border);
+            color: var(--text-main);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .theme-btn:hover { background: rgba(255, 255, 255, 0.15); }
+
         h1 {
             text-align: center;
             font-size: clamp(18px, 4.5vw, 26px);
@@ -65,6 +122,12 @@
             -webkit-text-fill-color: transparent;
         }
 
+        body.theme-light h1 {
+            background: none;
+            -webkit-text-fill-color: initial;
+            color: var(--text-main);
+        }
+
         .date {
             text-align: center;
             color: var(--text-muted);
@@ -73,13 +136,12 @@
             letter-spacing: 0.5px;
         }
 
-        /* 円形タイマー */
+        /* タイマー */
         .timer {
             display: flex;
             justify-content: center;
             margin: 15px 0;
         }
-
         .circle {
             position: relative;
             width: clamp(170px, 42vw, 210px);
@@ -88,7 +150,6 @@
             align-items: center;
             justify-content: center;
         }
-
         svg {
             transform: rotate(-90deg);
             width: 100%;
@@ -98,57 +159,14 @@
             left: 0;
             filter: drop-shadow(0 0 10px var(--cyan-glow));
         }
-
-        .bg-circle {
-            fill: none;
-            stroke: rgba(255, 255, 255, 0.05);
-            stroke-width: 12;
-        }
-
-        .progress-circle {
-            fill: none;
-            stroke: url(#color-class);
-            stroke-width: 12;
-            stroke-linecap: round;
-            transition: stroke-dashoffset 0.3s linear;
-        }
-
-        .center {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            width: 90%;
-            padding: 8px;
-        }
-
-        .clock {
-            font-size: clamp(20px, 5vw, 26px);
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            font-variant-numeric: tabular-nums;
-            color: #ffffff;
-            line-height: 1.1;
-        }
-
-        .remain {
-            font-size: clamp(10px, 2.5vw, 12px);
-            color: #fde68a;
-            margin-top: 4px;
-            font-weight: 600;
-            line-height: 1.3;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .status {
-            text-align: center;
-            font-size: clamp(14px, 3.2vw, 16px);
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: #ffffff;
-            padding: 0 8px;
-            line-height: 1.3;
-        }
+        .bg-circle { fill: none; stroke: rgba(255, 255, 255, 0.05); stroke-width: 12; }
+        body.theme-highcontrast .bg-circle { stroke: #333; }
+        .progress-circle { fill: none; stroke: url(#color-class); stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset 0.3s linear; }
+        .center { position: relative; z-index: 10; text-align: center; width: 90%; padding: 8px; }
+        .clock { font-size: clamp(20px, 5vw, 26px); font-weight: 800; color: var(--text-main); line-height: 1.1; }
+        .remain { font-size: clamp(10px, 2.5vw, 12px); color: #fde68a; margin-top: 4px; font-weight: 600; }
+        body.theme-light .remain { color: var(--yellow); }
+        .status { text-align: center; font-size: clamp(14px, 3.2vw, 16px); font-weight: 700; margin-bottom: 20px; padding: 0 8px; }
 
         .after-school-card {
             background: rgba(16, 185, 129, 0.06);
@@ -158,81 +176,21 @@
             margin-bottom: 20px;
             text-align: center;
             display: none;
-            animation: fadeIn 0.4s ease-out;
         }
-
-        .after-school-card.active {
-            display: block;
-        }
-
-        .after-school-title {
-            font-weight: 700;
-            color: var(--green);
-            margin-bottom: 4px;
-            font-size: 13px;
-        }
-
-        .after-school-text {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.85);
-            line-height: 1.4;
-        }
-
-        .flash {
-            animation: flash .8s infinite alternate;
-        }
-
-        @keyframes flash {
-            100% { opacity: 0.3; text-shadow: 0 0 6px var(--red); color: var(--red); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .after-school-card.active { display: block; }
+        .after-school-title { font-weight: 700; color: var(--green); margin-bottom: 4px; font-size: 13px; }
+        .after-school-text { font-size: 11px; color: var(--text-main); }
 
         /* セクション設計 */
-        .section {
-            margin-top: 24px;
-        }
+        .section { margin-top: 24px; }
+        .section.hidden-section { display: none !important; }
+        .title { font-size: 13px; font-weight: 700; color: var(--cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, rgba(6, 182, 212, 0.2), transparent); }
+        .title.mirakake-title { color: var(--purple); }
 
-        .section.hidden-section {
-            display: none !important;
-        }
+        .box { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
 
-        .title {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--cyan);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(to right, rgba(6, 182, 212, 0.2), transparent);
-        }
-
-        .title.mirakake-title {
-            color: var(--purple);
-        }
-        .title.mirakake-title::after {
-            background: linear-gradient(to right, rgba(168, 85, 247, 0.2), transparent);
-        }
-
-        .box {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 10px;
-        }
-
-        /* カード型 */
+        /* キーワードカード */
         .keyword {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -241,190 +199,54 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            position: relative;
         }
-
-        .keyword:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.12);
-        }
-
-        .keyword-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .badge {
-            font-size: 9px;
-            font-weight: 700;
-            padding: 1px 5px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
+        body.theme-light .keyword { background: #f9fafb; border-color: #e5e7eb; }
+        .keyword-header { display: flex; align-items: center; justify-content: space-between; }
+        .badge { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; background: rgba(255, 255, 255, 0.1); }
         .badge.class { color: var(--cyan); background: rgba(6, 182, 212, 0.1); }
         .badge.in { color: var(--green); background: rgba(16, 185, 129, 0.1); }
-        .badge.out { color: #f43f5e; background: rgba(244, 63, 94, 0.1); }
+        .badge.out { color: var(--red); background: rgba(239, 68, 68, 0.1); }
         .badge.mirakake { color: var(--purple); background: rgba(168, 85, 247, 0.1); }
+        .keyword-body { font-size: 13px; font-weight: 700; color: var(--text-main); word-break: break-all; }
+        .empty-key { color: rgba(255, 255, 255, 0.3); font-weight: 400; font-size: 11px; }
+        body.theme-light .empty-key { color: #9ca3af; }
 
-        .keyword-date {
-            font-size: 10px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
+        /* アコーディオン */
+        .accordion-btn { width: 100%; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 10px 12px; color: var(--text-main); font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+        body.theme-light .accordion-btn { background: #f3f4f6; border-color: #e5e7eb; }
+        .accordion-container { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .accordion-container.open { max-height: 400px; overflow-y: auto; scroll-behavior: smooth; }
 
-        .keyword-body {
-            font-size: 13px;
-            font-weight: 700;
-            color: #ffffff;
-            word-break: break-all;
-            line-height: 1.3;
-        }
+        .mirakake-day-block { border-left: 3px solid var(--purple); padding-left: 8px; margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px; scroll-margin-top: 6px; }
+        .mirakake-day-date { font-size: 11px; font-weight: 800; color: var(--purple); margin-bottom: 4px; }
+        .mirakake-grid-compact { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 4px; }
+        .mirakake-item-compact { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.04); padding: 6px; border-radius: 4px; font-size: 11px; }
+        body.theme-light .mirakake-item-compact { background: #f9fafb; border-color: #e5e7eb; }
+        .mirakake-item-name { font-weight: 700; color: var(--text-main); }
+        .mirakake-item-room { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
 
-        .empty-key {
-            color: rgba(255, 255, 255, 0.2);
-            font-weight: 400;
-            font-size: 11px;
-        }
+        /* 管理者モード用スタイル */
+        .admin-trigger { text-align: center; margin-top: 30px; font-size: 11px; color: var(--text-muted); cursor: pointer; text-decoration: underline; }
+        .admin-panel { background: rgba(239, 68, 68, 0.05); border: 1px solid var(--red); border-radius: 12px; padding: 15px; margin-top: 15px; display: none; }
 
-        .history-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .line { text-align: center; margin-top: 20px; }
+        .line img { height: 32px; opacity: 0.8; }
+        .footer { text-align: center; font-size: 10px; color: var(--text-muted); margin-top: 15px; opacity: 0.5; }
 
-        .history-day-title {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: -4px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* アコーディオン・ボタン設定 */
-        .accordion-btn {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
-            padding: 10px 12px;
-            color: #ffffff;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            margin-top: 4px;
-        }
-
-        .accordion-btn:hover {
-            background: rgba(255, 255, 255, 0.07);
-        }
-
-        .accordion-btn.mirakake-btn {
-            background: rgba(168, 85, 247, 0.06);
-            border: 1px solid rgba(168, 85, 247, 0.15);
-        }
-
-        .accordion-btn.mirakake-btn:hover {
-            background: rgba(168, 85, 247, 0.12);
-        }
-
-        /* アコーディオン開閉コンテナ */
-        .accordion-container {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-
-        .accordion-container.open {
-            max-height: 400px;
-            overflow-y: auto; /* 内部スクロール・スワイプを有効化 */
-            scroll-behavior: smooth;
-        }
-
-        /* みらかけレイアウト */
-        .mirakake-day-block {
-            border-left: 3px solid var(--purple);
-            padding-left: 8px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.01);
-            padding-top: 4px;
-            padding-bottom: 4px;
-            border-radius: 0 6px 6px 0;
-            scroll-margin-top: 6px; /* スクロール時の余白確保 */
-        }
-
-        .mirakake-day-date {
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--purple);
-            margin-bottom: 4px;
-        }
-
-        .mirakake-grid-compact {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 4px;
-        }
-
-        .mirakake-item-compact {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            padding: 6px;
-            border-radius: 4px;
-            font-size: 11px;
-        }
-
-        .mirakake-item-name {
-            font-weight: 700;
-            color: #ffffff;
-            line-height: 1.2;
-        }
-
-        .mirakake-item-room {
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        .line {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .line img {
-            height: 32px;
-            opacity: 0.8;
-        }
-
-        .line img:hover {
-            opacity: 1;
-        }
-
-        .footer {
-            text-align: center;
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.15);
-            margin-top: 15px;
-            letter-spacing: 0.5px;
-        }
-
-        @media (max-width: 600px) {
-            .wrapper { padding: 8px 6px; }
-            .card { padding: 12px; border-radius: 12px; }
-            .box { grid-template-columns: 1fr; }
-            .mirakake-grid-compact { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 600px) { .box { grid-template-columns: 1fr; } .mirakake-grid-compact { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
 <div class="wrapper">
+    <!-- アクセシビリティバー（最上部設定） -->
+    <div class="accessibility-bar">
+        <button class="theme-btn" onclick="changeTheme('cyber')">🌐 サイバー</button>
+        <button class="theme-btn" onclick="changeTheme('dark')">🌑 ダーク</button>
+        <button class="theme-btn" onclick="changeTheme('light')">☀️ ライト</button>
+        <button class="theme-btn" onclick="changeTheme('highcontrast')">👁️ 高コントラスト</button>
+    </div>
+
     <div class="card">
         <!-- ① 授業タイマー -->
         <h1>📚 授業タイマー Ultimate Cyber</h1>
@@ -434,44 +256,28 @@
             <div class="circle">
                 <svg viewBox="0 0 280 280">
                     <defs>
-                        <linearGradient id="color-class">
-                            <stop offset="0%" stop-color="#06b6d4"/>
-                            <stop offset="50%" stop-color="#10b981"/>
-                            <stop offset="100%" stop-color="#ef4444"/>
-                        </linearGradient>
-                        <linearGradient id="color-break">
-                            <stop offset="0%" stop-color="#3b82f6"/>
-                            <stop offset="100%" stop-color="#06b6d4"/>
-                        </linearGradient>
-                        <linearGradient id="color-finished">
-                            <stop offset="0%" stop-color="#a855f7"/>
-                            <stop offset="100%" stop-color="#10b981"/>
-                        </linearGradient>
-                        <linearGradient id="color-sleep">
-                            <stop offset="0%" stop-color="#ef4444"/>
-                            <stop offset="100%" stop-color="#a855f7"/>
-                        </linearGradient>
+                        <linearGradient id="color-class"><stop offset="0%" stop-color="#06b6d4"/><stop offset="50%" stop-color="#10b981"/><stop offset="100%" stop-color="#ef4444"/></linearGradient>
+                        <linearGradient id="color-break"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient>
+                        <linearGradient id="color-finished"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#10b981"/></linearGradient>
+                        <linearGradient id="color-sleep"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#a855f7"/></linearGradient>
                     </defs>
                     <circle class="bg-circle" cx="140" cy="140" r="110"/>
                     <circle id="progress" class="progress-circle" cx="140" cy="140" r="110"/>
                 </svg>
-
                 <div class="center">
                     <div class="clock" id="clock">00:00:00</div>
                     <div class="remain" id="remain">ONLINE</div>
                 </div>
             </div>
         </div>
-
         <div class="status" id="status">SYSTEM READY</div>
 
-        <!-- 授業終了後のお疲れ様メッセージエリア -->
         <div class="after-school-card" id="after-school-msg">
             <div class="after-school-title">✨ TODAY'S LESSONS COMPLETED ✨</div>
             <div class="after-school-text" id="after-school-text"></div>
         </div>
 
-        <!-- ② 今日のキーワード -->
+        <!-- ② 今日のキーワード (固定配列順) -->
         <div class="section" id="today-keywords-section">
             <div class="title">✨ 今日のキーワード</div>
             <div id="today" class="box"></div>
@@ -492,14 +298,14 @@
                 <span id="kw-accordion-icon">▼</span>
             </button>
             <div class="accordion-container" id="keyword-list-container">
-                <div id="history" class="history-container" style="padding: 10px 5px;"></div>
+                <div id="history" style="padding: 10px 5px; display:flex; flex-direction:column; gap:12px;"></div>
             </div>
         </div>
 
-        <!-- ⑤ みらかけの日程 (プルダウン形式・今日へ自動スクロール) -->
+        <!-- ⑤ みらかけの日程 (プルダウン形式) -->
         <div class="section" id="mirakake-list-section">
             <div class="title mirakake-title">📅 みらかけの日程 (7月予定表)</div>
-            <button class="accordion-btn mirakake-btn" id="accordion-btn" onclick="toggleMirakakeList()">
+            <button class="accordion-btn" id="accordion-btn" onclick="toggleMirakakeList()">
                 <span>📋 全ての日程と教室をみる</span>
                 <span id="accordion-icon">▼</span>
             </button>
@@ -508,12 +314,20 @@
             </div>
         </div>
 
+        <!-- 管理者モード認証エリア -->
+        <div class="admin-trigger" onclick="promptAdminLogin()">🔒 管理者モードログイン</div>
+        <div class="admin-panel" id="admin-panel">
+            <h3 style="color:var(--red); margin:0 0 10px 0; font-size:14px;">🛠️ 管理者コントロールパネル (認証済)</h3>
+            <p style="font-size:11px; margin:0 0 10px 0;">ステータス: 稼働中 | アカウント: anko. kurorabu</p>
+            <button class="theme-btn" style="border-color:var(--red);" onclick="alert('GASキャッシュを強制クリアしました(シミュレート)')">GASキャッシュクリア</button>
+            <button class="theme-btn" onclick="alert('システムログ：エラー0件')">システムログ抽出</button>
+        </div>
+
         <div class="line">
             <a href="https://lin.ee/YkfIPJ8" target="_blank" rel="noopener noreferrer">
                 <img src="https://scdn.line-apps.com/n/line_add_friends/btn/ja.png" alt="友だち追加">
             </a>
         </div>
-
         <div class="footer">POWERED BY GOOGLE APPS SCRIPT</div>
     </div>
 </div>
@@ -528,20 +342,35 @@
     ];
 
     const mirakakeSchedule = {
-        "2026-07-01": [{ name: "心理学", room: "9B" }, { name: "ミュージック", room: "9C" }, { name: "ビジネスコミュニケーション", room: "6F" }],
-        "2026-07-02": [{ name: "オープンレッスン", room: "9A" }, { name: "書道", room: "9B" }, { name: "ダンス", room: "9C" }, { name: "検定", room: "6F" }],
-        "2026-07-03": [{ name: "オープンキャンパスプロジェクト", room: "全体" }],
-        "2026-07-06": [{ name: "クラフト", room: "9A" }, { name: "ネイル", room: "9B" }, { name: "けん玉", room: "9C" }, { name: "オープンレッスン", room: "6F" }],
-        "2026-07-07": [{ name: "謎解き", room: "9A" }, { name: "ネイル", room: "9B" }, { name: "スポーツ", room: "9C" }],
-        "2026-07-08": [{ name: "進路(3年生のみ)", room: "9A" }, { name: "心理学", room: "9B" }, { name: "ミュージック", room: "9C" }, { name: "ビジネスコミュニケーション", room: "6F" }],
-        "2026-07-09": [{ name: "e-sports", room: "9B" }, { name: "書道", room: "9C" }, { name: "グローバル", room: "6F" }],
-        "2026-07-10": [{ name: "クラフト", room: "9B" }, { name: "生徒会", room: "9C" }, { name: "オープンレッスン", room: "6F" }],
-        "2026-07-13": [{ name: "クラフト", room: "9A" }, { name: "ネイル", room: "9B" }, { name: "けん玉", room: "9C" }, { name: "進路の架け橋", room: "6F" }],
-        "2026-07-14": [{ name: "イラスト", room: "9A" }, { name: "ネイル", room: "9B" }, { name: "スポーツ", room: "9C" }, { name: "進路の架け橋", room: "6F" }],
-        "2026-07-15": [{ name: "オープンレッスン", room: "9A" }, { name: "4コマ漫画", room: "9B" }, { name: "ミュージック", room: "9C" }, { name: "ビジネスコミュニケーション", room: "6F" }],
-        "2026-07-16": [{ name: "オープンレッスン", room: "9A" }, { name: "書道", room: "9B" }, { name: "ダンス", room: "9C" }, { name: "検定", room: "6F" }],
+        "2026-07-13": [{ name: "クラフト", room: "9A" }, { name: "ネイル", room: "9B" }],
+        "2026-07-14": [{ name: "イラスト", room: "9A" }, { name: "ネイル", room: "9B" }, { name: "スポーツ", room: "9C" }],
+        "2026-07-15": [{ name: "オープンレッスン", room: "9A" }, { name: "4コマ漫画", room: "9B" }],
+        "2026-07-16": [{ name: "オープンレッスン", room: "9A" }, { name: "書道", room: "9B" }],
         "2026-07-17": [{ name: "✨ みらかけ発表会 ✨", room: "各教室" }]
     };
+
+    // アクセシビリティ：テーマ変更
+    function changeTheme(theme) {
+        document.body.className = '';
+        if(theme !== 'cyber') {
+            document.body.classList.add('theme-' + theme);
+        }
+    }
+
+    // 管理者ログイン
+    function promptAdminLogin() {
+        const id = prompt("管理者IDを入力してください:");
+        if (id === null) return;
+        const pass = prompt("パスワードを入力してください:");
+        if (pass === null) return;
+
+        if (id.trim() === "anko. kurorabu" && pass === "Mitarashidango06") {
+            alert("認証に成功しました。管理者パネルを開きます。");
+            document.getElementById("admin-panel").style.display = "block";
+        } else {
+            alert("IDまたはパスワードが違います。");
+        }
+    }
 
     const radius = 110;
     const circleLength = 2 * Math.PI * radius;
@@ -573,76 +402,47 @@
         const dayOfWeek = now.getDay();
         dateEl.textContent = now.toLocaleDateString("ja-JP", { dateStyle: "full" });
         clockEl.textContent = now.toLocaleTimeString("ja-JP");
-
         const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
-        let msg = "🎉 今日の授業はすべて終了しました";
-        let rem = "お疲れ様でした！";
-        let percent = 100;
-        let left = 99999;
-        let isBreak = false;
-        let isFinished = false;
-        let isSleepTime = false;
+        let msg = "🎉 今日の授業はすべて終了しました"; let rem = "お疲れ様でした！";
+        let percent = 100; let left = 99999; let isBreak = false; let isFinished = false; let isSleepTime = false;
 
-        if (nowSec >= 21 * 3600 || nowSec < 5 * 3600) {
-            isSleepTime = true;
-        }
+        if (nowSec >= 21 * 3600 || nowSec < 5 * 3600) isSleepTime = true;
 
         if (dayOfWeek === 0 || dayOfWeek === 6) {
-            msg = "🍵 休日のため授業はありません";
-            rem = "素敵な週末を！";
-            percent = 100;
-            isFinished = true;
+            msg = "🍵 休日のため授業はありません"; rem = "素敵な週末を！"; isFinished = true;
         } else {
             const lastLessonEnd = sec(schedule[schedule.length - 1].end);
-
             if (nowSec >= lastLessonEnd) {
                 isFinished = true;
-                percent = 100;
-                
                 if (nowSec < 12 * 3600 + 50 * 60) {
-                    const startSec = 12 * 3600 + 50 * 60;
-                    const diffSec = startSec - nowSec;
-                    msg = "⚡️ 放課後 / お昼休み";
-                    rem = `みらかけ開始(12:50)まで ${Math.floor(diffSec / 60)}分 ${String(diffSec % 60).padStart(2, "0")}秒`;
+                    const diffSec = (12 * 3600 + 50 * 60) - nowSec;
+                    msg = "⚡️ 放課後 / お昼休み"; rem = `みらかけ開始まで ${Math.floor(diffSec / 60)}分 ${diffSec % 60}秒`;
                 } else if (nowSec < 14 * 3600 + 20 * 60) {
-                    msg = "✨ みらいの架け橋レッスン実施中";
-                    rem = "14:20 終了予定";
+                    msg = "✨ みらいの架け橋レッスン実施中"; rem = "14:20 終了予定";
                 } else if (nowSec < 18 * 3600) {
-                    msg = "🌅 放課後 / 下校時間";
-                    rem = "帰り道、気をつけてね！";
+                    msg = "🌅 放課後 / 下校時間"; rem = "帰り道、気をつけてね！";
                 } else if (!isSleepTime) {
-                    msg = "🌌 今日も一日お疲れ様でした！";
-                    rem = "しっかり体を休めましょう";
+                    msg = "🌌 今日も一日お疲れ様でした！"; rem = "しっかり体を休めましょう";
                 }
             } else {
                 for (let i = 0; i < schedule.length; i++) {
-                    const current = schedule[i];
-                    const start = sec(current.start);
-                    const end = sec(current.end);
-
+                    const current = schedule[i]; const start = sec(current.start); const end = sec(current.end);
                     if (nowSec < start) {
                         if (i > 0 && nowSec >= sec(schedule[i - 1].end)) {
-                            const breakStart = sec(schedule[i - 1].end);
-                            left = start - nowSec;
+                            const breakStart = sec(schedule[i - 1].end); left = start - nowSec;
                             msg = `☕️ 休み時間 (${schedule[i - 1].name} ➔ ${current.name})`;
                             rem = `次まで ${Math.floor(left / 60)}分 ${String(left % 60).padStart(2, "0")}秒`;
-                            percent = ((nowSec - breakStart) / (start - breakStart)) * 100;
-                            isBreak = true;
+                            percent = ((nowSec - breakStart) / (start - breakStart)) * 100; isBreak = true;
                         } else {
-                            left = start - nowSec;
-                            msg = `🕒 スタンドバイ: ${current.name}`;
-                            rem = `開始まで ${Math.floor(left / 60)}分 ${String(left % 60).padStart(2, "0")}秒`;
-                            percent = 0;
+                            left = start - nowSec; msg = `🕒 スタンドバイ: ${current.name}`;
+                            rem = `開始まで ${Math.floor(left / 60)}分 ${left % 60}秒`; percent = 0;
                         }
                         break;
                     }
-
                     if (nowSec >= start && nowSec < end) {
-                        left = end - nowSec;
-                        msg = `⚡️ ${current.name} 進行中`;
-                        rem = `残り ${Math.floor(left / 60)}分 ${String(left % 60).padStart(2, "0")}秒`;
-                        percent = ((nowSec - start) / (end - start)) * 100;
+                        left = end - nowSec; msg = `⚡️ ${current.name} 進行中`;
+                        rem = `残り ${Math.floor(left / 60)}分 ${left % 60}秒`; percent = ((nowSec - start) / (end - start)) * 100;
                         break;
                     }
                 }
@@ -650,82 +450,39 @@
         }
 
         if (isSleepTime) {
-            msg = "💤 夜更かしはサイバーウェアに毒だぞ！";
-            rem = "はよ寝ろ！明日に響くぞ！😴";
+            msg = "💤 夜更かしはサイバーウェアに毒だぞ！"; rem = "はよ寝ろ！明日に響くぞ！😴";
             progress.style.stroke = "url(#color-sleep)";
-            if (document.querySelector('svg')) document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--red-glow))";
-        } else if (isFinished) {
-            progress.style.stroke = "url(#color-finished)";
-            if (document.querySelector('svg')) document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--purple-glow))";
-        } else if (isBreak) {
-            progress.style.stroke = "url(#color-break)";
-            if (document.querySelector('svg')) document.querySelector('svg').style.filter = "drop-shadow(0 0 10px rgba(59, 130, 246, 0.4))";
-        } else {
-            progress.style.stroke = "url(#color-class)";
-            if (document.querySelector('svg')) document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--cyan-glow))";
-        }
+        } else if (isFinished) { progress.style.stroke = "url(#color-finished)"; }
+        else if (isBreak) { progress.style.stroke = "url(#color-break)"; }
+        else { progress.style.stroke = "url(#color-class)"; }
 
-        statusEl.textContent = msg;
-        remainEl.textContent = rem;
+        statusEl.textContent = msg; remainEl.textContent = rem;
         progress.style.strokeDashoffset = Math.max(0, Math.min(circleLength, circleLength - (circleLength * percent / 100)));
 
-        if (!isFinished && !isBreak && left <= 300 && percent < 100) {
-            remainEl.classList.add("flash");
-        } else {
-            remainEl.classList.remove("flash");
-        }
-
         const mirakakeSection = document.getElementById("mirakake-today-section");
-        const lastLessonEndSec = sec(schedule[schedule.length - 1].end); 
-        const mirakakeLimitSec = 14 * 3600 + 20 * 60; 
-
-        if (nowSec >= lastLessonEndSec && nowSec < mirakakeLimitSec && dayOfWeek !== 0 && dayOfWeek !== 6) {
-            if (afterSchoolCard) {
-                afterSchoolCard.classList.add("active");
-                afterSchoolText.textContent = "通常授業お疲れ様でした！この後は12:50から始まる「みらいの架け橋レッスン」を楽しみましょう！✨";
-            }
-        } else {
-            if (afterSchoolCard) afterSchoolCard.classList.remove("active");
-        }
+        if (nowSec >= sec("12:10") && nowSec < sec("14:20") && dayOfWeek !== 0 && dayOfWeek !== 6) {
+            if (afterSchoolCard) { afterSchoolCard.classList.add("active"); afterSchoolText.textContent = "通常授業お疲れ様でした！この後はみらかけを楽しみましょう！✨"; }
+        } else { if (afterSchoolCard) afterSchoolCard.classList.remove("active"); }
 
         if (mirakakeSection) {
-            if (nowSec >= mirakakeLimitSec || dayOfWeek === 0 || dayOfWeek === 6) {
-                mirakakeSection.classList.add("hidden-section");
-            } else {
-                mirakakeSection.classList.remove("hidden-section");
-            }
+            if (nowSec >= sec("14:20") || dayOfWeek === 0 || dayOfWeek === 6) mirakakeSection.classList.add("hidden-section");
+            else mirakakeSection.classList.remove("hidden-section");
         }
     }
 
     function toggleKeywordList() {
         const container = document.getElementById("keyword-list-container");
-        const icon = document.getElementById("kw-accordion-icon");
-        if (container.classList.contains("open")) {
-            container.classList.remove("open");
-            icon.textContent = "▼";
-        } else {
-            container.classList.add("open");
-            icon.textContent = "▲";
-        }
+        document.getElementById("kw-accordion-icon").textContent = container.classList.toggle("open") ? "▲" : "▼";
     }
 
-    // みらかけの日程アコーディオン制御（開いた瞬間今日へジャンプ）
     function toggleMirakakeList() {
         const container = document.getElementById("mirakake-list-container");
-        const icon = document.getElementById("accordion-icon");
-        if (container.classList.contains("open")) {
-            container.classList.remove("open");
-            icon.textContent = "▼";
-        } else {
-            container.classList.add("open");
-            icon.textContent = "▲";
-
-            // アコーディオンの展開アニメーション完了後に今日の要素を捉えてスクロール
+        const isOpen = container.classList.toggle("open");
+        document.getElementById("accordion-icon").textContent = isOpen ? "▲" : "▼";
+        if (isOpen) {
             setTimeout(() => {
                 const todayBlock = document.getElementById("mirakake-target-today");
-                if (todayBlock) {
-                    todayBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+                if (todayBlock) todayBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 150);
         }
     }
@@ -734,8 +491,7 @@
         if (!dateInput) return "";
         let d = new Date(dateInput);
         if (isNaN(d.getTime())) d = new Date(String(dateInput).replace(/\//g, '-'));
-        if (isNaN(d.getTime())) return "";
-        return formatDateLocal(d);
+        return isNaN(d.getTime()) ? "" : formatDateLocal(d);
     }
 
     function loadMirakake() {
@@ -744,162 +500,94 @@
         const listEl = document.getElementById("mirakake-list");
 
         let todayHtml = "";
-        const todayObj = new Date();
-        const limitDate = new Date("2026-07-18");
-
-        if (todayObj >= limitDate) {
-            todayHtml = `
-                <div class="keyword" style="grid-column: 1/-1; text-align: center; border-color: var(--yellow);">
-                    <div class="keyword-body" style="color: var(--yellow); font-size: 13px;">🌻 夏休み期間中 🌻</div>
-                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">7月18日より夏休みに入りました。みらかけもお休みです。</div>
-                </div>
-            `;
-        } else if (mirakakeSchedule[todayStr] && mirakakeSchedule[todayStr].length > 0) {
+        if (mirakakeSchedule[todayStr]) {
             mirakakeSchedule[todayStr].forEach(item => {
-                todayHtml += `
-                    <div class="keyword" style="border-color: rgba(168, 85, 247, 0.25); padding: 10px;">
-                        <div class="keyword-header">
-                            <span class="badge mirakake">🎨 みらかけ</span>
-                            <span class="keyword-date">本日</span>
-                        </div>
-                        <div class="keyword-body" style="font-size: 13px; margin-top: 4px;">${item.name}</div>
-                        <div class="keyword-footer" style="font-size: 10px; margin-top: 6px; padding-top: 4px; display:flex; justify-content:space-between; color:var(--text-muted); border-top:1px solid rgba(255,255,255,0.04)">
-                            <span>教室: <strong>${item.room}</strong></span>
-                            <span>⏰ 12:50〜14:20</span>
-                        </div>
-                    </div>
-                `;
+                todayHtml += `<div class="keyword" style="border-color:var(--purple);"><div class="keyword-header"><span class="badge mirakake">🎨 みらかけ</span></div><div class="keyword-body">${item.name}</div><div style="font-size:10px; color:var(--text-muted)">部屋: ${item.room}</div></div>`;
             });
         } else {
-            todayHtml = `<div class="keyword" style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 10px; font-size: 11px;">本日のみらいの架け橋レッスンの予定はありません。</div>`;
+            todayHtml = `<div class="keyword" style="grid-column:1/-1; text-align:center; color:var(--text-muted); font-size:11px;">本日の予定はありません</div>`;
         }
-        if (todayBox) todayBox.innerHTML = todayHtml;
+        todayBox.innerHTML = todayHtml;
 
         let listHtml = "";
-        const dates = Object.keys(mirakakeSchedule).sort();
-
-        dates.forEach(dateStr => {
-            const formattedDate = dateStr.replace(/-/g, '/');
-            const dayList = mirakakeSchedule[dateStr];
-            
-            // 今日の一覧ブロックにスクロールターゲット用のIDを付与
+        Object.keys(mirakakeSchedule).sort().forEach(dateStr => {
             const isToday = (dateStr === todayStr);
-            const idAttr = isToday ? 'id="mirakake-target-today"' : '';
-            const highlightStyle = isToday ? 'background: rgba(168, 85, 247, 0.08); border-left-width: 5px;' : '';
-            
-            listHtml += `
-                <div class="mirakake-day-block" ${idAttr} style="${highlightStyle}">
-                    <div class="mirakake-day-date">📅 ${formattedDate} ${isToday ? '⭐️本日' : ''}</div>
-                    <div class="mirakake-grid-compact">
-            `;
-            
-            dayList.forEach(item => {
-                listHtml += `
-                    <div class="mirakake-item-compact">
-                        <div class="mirakake-item-name">${item.name}</div>
-                        <div class="mirakake-item-room">🚪 ${item.room} | 12:50〜14:20</div>
-                    </div>
-                `;
+            listHtml += `<div class="mirakake-day-block" ${isToday ? 'id="mirakake-target-today" style="background:rgba(168,85,247,0.1)"' : ''}><div class="mirakake-day-date">📅 ${dateStr.replace(/-/g,'/')} ${isToday?'⭐️本日':''}</div><div class="mirakake-grid-compact">`;
+            mirakakeSchedule[dateStr].forEach(item => {
+                listHtml += `<div class="mirakake-item-compact"><div class="mirakake-item-name">${item.name}</div><div class="mirakake-item-room">🚪 ${item.room}</div></div>`;
             });
-
             listHtml += `</div></div>`;
         });
-
-        if (listEl) listEl.innerHTML = listHtml;
+        listEl.innerHTML = listHtml;
     }
 
     async function loadKeywords() {
         const todayBox = document.getElementById("today");
         const historyBox = document.getElementById("history");
-        const noticeEl = document.getElementById("demo-notice");
-
         let data = [];
+
         try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 6000);
-            const res = await fetch(GAS_URL, { method: "GET", signal: controller.signal });
-            clearTimeout(timeoutId);
-            if (res.ok) {
-                data = await res.json();
-                if (noticeEl) noticeEl.style.display = 'none';
-            }
+            const res = await fetch(GAS_URL);
+            if (res.ok) data = await res.json();
         } catch (e) {
-            if (noticeEl) {
-                noticeEl.innerHTML = `⚠️ サーバー非同期（サンプル稼働中）`;
-                noticeEl.style.display = 'block';
-            }
-            const today = new Date();
-            const yest = new Date(today); yest.setDate(yest.getDate() - 1);
+            // オフライン・デモデータ
+            const today = formatDateLocal(new Date());
             data = [
-                { "日付": formatDateLocal(today), "キーワードの種類": "登下校", "登下校": "登校", "登校キーワード": "10366" },
-                { "日付": formatDateLocal(today), "キーワードの種類": "授業", "時間": "1限目", "授業キーワード": "プログラミング基礎" },
-                { "日付": formatDateLocal(yest), "キーワードの種類": "登下校", "登下校": "下校", "下校キーワード": "お疲れ様でした！" }
+                { "日付": today, "キーワードの種類": "授業", "時間": "2限目", "授業キーワード": "数学Ⅱ" },
+                { "日付": today, "キーワードの種類": "登下校", "登下校": "登校", "登校キーワード": "88412" },
+                { "日付": today, "キーワードの種類": "授業", "時間": "1限目", "授業キーワード": "現代の国語" },
+                { "日付": today, "キーワードの種類": "登下校", "登下校": "下校", "下校キーワード": "14:30完全下校" },
+                { "日付": today, "キーワードの種類": "授業", "時間": "3限目", "授業キーワード": "英語コミュニケーション" }
             ];
         }
 
         const todayStr = formatDateLocal(new Date());
         const groups = {};
-
-        for (const item of data) {
+        data.forEach(item => {
             const dStr = parseItemDate(item["日付"]);
-            if (!dStr) continue;
-            if (!groups[dStr]) groups[dStr] = [];
-            groups[dStr].push(item);
+            if (dStr) { if (!groups[dStr]) groups[dStr] = []; groups[dStr].push(item); }
+        });
+
+        // ⭐ 【重要】今日のキーワードを「登校 ➔ 1限目 ➔ 2限目 ➔ 3限目 ➔ 下校」の順に強制ソートする定義
+        const orderMap = { "登校": 1, "1限目": 2, "2限目": 3, "3限目": 4, "下校": 5 };
+        function getSortOrder(item) {
+            if (item["キーワードの種類"] === "登下校") return orderMap[item["登下校"]] || 99;
+            if (item["キーワードの種類"] === "授業") return orderMap[item["時間"]] || 99;
+            return 99;
         }
 
         let todayHTML = "";
-        if (groups[todayStr] && groups[todayStr].length > 0) {
+        if (groups[todayStr]) {
+            // スプレッドシートの並び順に関係なく自動で並び替え
+            groups[todayStr].sort((a, b) => getSortOrder(a) - getSortOrder(b));
             groups[todayStr].forEach(item => { todayHTML += createCard(item); });
         } else {
-            todayHTML = `<div class="keyword" style="grid-column: 1/-1; text-align: center; color: var(--text-muted); font-size: 11px; padding: 10px;">本日のデータはまだ登録されていません</div>`;
+            todayHTML = `<div class="keyword" style="grid-column:1/-1; text-align:center; color:var(--text-muted); font-size:11px;">本日のキーワードは未登録です</div>`;
         }
-        if (todayBox) todayBox.innerHTML = todayHTML;
+        todayBox.innerHTML = todayHTML;
 
         let historyHTML = "";
-        const pastDates = Object.keys(groups).filter(date => date !== todayStr).sort().reverse().slice(0, 5);
-
-        if (pastDates.length > 0) {
-            pastDates.forEach(date => {
-                historyHTML += `
-                    <div>
-                        <div class="history-day-title">📅 ${date.replace(/-/g, '/')}</div>
-                        <div class="box" style="margin-top: 6px;">
-                `;
-                groups[date].forEach(item => { historyHTML += createCard(item); });
-                historyHTML += `</div></div>`;
-            });
-        } else {
-            historyHTML = `<div class="keyword" style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 10px;">過去の履歴データはありません</div>`;
-        }
-        if (historyBox) historyBox.innerHTML = historyHTML;
+        Object.keys(groups).filter(d => d !== todayStr).sort().reverse().slice(0, 3).forEach(date => {
+            historyHTML += `<div><div class="history-day-title">📅 ${date.replace(/-/g, '/')}</div><div class="box" style="margin-top:6px;">`;
+            groups[date].sort((a, b) => getSortOrder(a) - getSortOrder(b)).forEach(item => { historyHTML += createCard(item); });
+            historyHTML += `</div></div>`;
+        });
+        historyBox.innerHTML = historyHTML || `<div class="keyword" style="text-align:center; color:var(--text-muted); font-size:11px;">履歴はありません</div>`;
     }
 
     function createCard(item) {
         let label = "その他"; let typeClass = "class"; let icon = "📝"; let rawText = "";
-        const type = item["キーワードの種類"];
-
-        if (type === "登下校") {
-            const mode = item["登下校"];
-            if (mode === "登校") { icon = "🏫"; label = "登校"; typeClass = "in"; rawText = item["登校キーワード"]; }
-            else if (mode === "下校") { icon = "🏠"; label = "下校"; typeClass = "out"; rawText = item["下校キーワード"]; }
-        } else if (type === "授業") {
+        if (item["キーワードの種類"] === "登下校") {
+            if (item["登下校"] === "登校") { icon = "🏫"; label = "登校"; typeClass = "in"; rawText = item["登校キーワード"]; }
+            else { icon = "🏠"; label = "下校"; typeClass = "out"; rawText = item["下校キーワード"]; }
+        } else {
             icon = "📚"; label = item["時間"] || "授業"; typeClass = "class"; rawText = item["授業キーワード"];
         }
-
-        let displayText = rawText && String(rawText).trim() !== "" ? rawText : `<span class="empty-key">未登録</span>`;
-        return `
-            <div class="keyword" style="padding: 10px;">
-                <div class="keyword-header"><span class="badge ${typeClass}">${icon} ${label}</span></div>
-                <div class="keyword-body" style="font-size: 13px; margin-top: 4px;">${displayText}</div>
-            </div>
-        `;
+        return `<div class="keyword"><div class="keyword-header"><span class="badge ${typeClass}">${icon} ${label}</span></div><div class="keyword-body">${rawText || '<span class="empty-key">未登録</span>'}</div></div>`;
     }
 
-    tick();
-    loadKeywords();
-    loadMirakake();
-    setInterval(tick, 1000);
-    setInterval(loadKeywords, 45000);
+    tick(); loadKeywords(); loadMirakake();
+    setInterval(tick, 1000); setInterval(loadKeywords, 45000);
 </script>
 </body>
 </html>
