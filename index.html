@@ -150,7 +150,6 @@
             line-height: 1.3;
         }
 
-        /* 授業終了後のお疲れ様メッセージエリア */
         .after-school-card {
             background: rgba(16, 185, 129, 0.06);
             border: 1px dashed var(--green);
@@ -233,7 +232,7 @@
             gap: 10px;
         }
 
-        /* キーワード・みらかけカードデザイン */
+        /* カード型 */
         .keyword {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -256,7 +255,6 @@
             justify-content: space-between;
         }
 
-        /* モードバッジ */
         .badge {
             font-size: 9px;
             font-weight: 700;
@@ -284,24 +282,12 @@
             line-height: 1.3;
         }
 
-        .keyword-footer {
-            font-size: 10px;
-            color: var(--text-muted);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 3px;
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            padding-top: 4px;
-        }
-
         .empty-key {
             color: rgba(255, 255, 255, 0.2);
             font-weight: 400;
             font-size: 11px;
         }
 
-        /* 過去のセクション専用のコンテナ */
         .history-container {
             display: flex;
             flex-direction: column;
@@ -318,13 +304,13 @@
             gap: 6px;
         }
 
-        /* みらかけカレンダーデザイン */
-        .mirakake-accordion-btn {
+        /* アコーディオン・ボタン設定 */
+        .accordion-btn {
             width: 100%;
-            background: rgba(168, 85, 247, 0.06);
-            border: 1px solid rgba(168, 85, 247, 0.15);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 8px;
-            padding: 8px 12px;
+            padding: 10px 12px;
             color: #ffffff;
             font-weight: 700;
             cursor: pointer;
@@ -332,24 +318,36 @@
             justify-content: space-between;
             align-items: center;
             font-size: 12px;
-            margin-top: 8px;
+            margin-top: 4px;
         }
 
-        .mirakake-accordion-btn:hover {
+        .accordion-btn:hover {
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .accordion-btn.mirakake-btn {
+            background: rgba(168, 85, 247, 0.06);
+            border: 1px solid rgba(168, 85, 247, 0.15);
+        }
+
+        .accordion-btn.mirakake-btn:hover {
             background: rgba(168, 85, 247, 0.12);
         }
 
-        .mirakake-list-container {
+        /* アコーディオン開閉コンテナ */
+        .accordion-container {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-out;
         }
 
-        .mirakake-list-container.open {
-            max-height: 800px;
-            overflow-y: auto;
+        .accordion-container.open {
+            max-height: 400px;
+            overflow-y: auto; /* 内部スクロール・スワイプを有効化 */
+            scroll-behavior: smooth;
         }
 
+        /* みらかけレイアウト */
         .mirakake-day-block {
             border-left: 3px solid var(--purple);
             padding-left: 8px;
@@ -358,6 +356,7 @@
             padding-top: 4px;
             padding-bottom: 4px;
             border-radius: 0 6px 6px 0;
+            scroll-margin-top: 6px; /* スクロール時の余白確保 */
         }
 
         .mirakake-day-date {
@@ -427,6 +426,7 @@
 
 <div class="wrapper">
     <div class="card">
+        <!-- ① 授業タイマー -->
         <h1>📚 授業タイマー Ultimate Cyber</h1>
         <div class="date" id="date"></div>
 
@@ -465,42 +465,47 @@
 
         <div class="status" id="status">SYSTEM READY</div>
 
-        <!-- 授業終了後のお疲れ様メッセージエリア (14:20以降は非表示に制御) -->
+        <!-- 授業終了後のお疲れ様メッセージエリア -->
         <div class="after-school-card" id="after-school-msg">
             <div class="after-school-title">✨ TODAY'S LESSONS COMPLETED ✨</div>
-            <div class="after-school-text" id="after-school-text">
-                本日の通常授業はすべて終了しました！お疲れ様でした。
-            </div>
+            <div class="after-school-text" id="after-school-text"></div>
         </div>
 
-        <!-- 今日のみらいの架け橋レッスン (14:20以降は非表示に制御) -->
+        <!-- ② 今日のキーワード -->
+        <div class="section" id="today-keywords-section">
+            <div class="title">✨ 今日のキーワード</div>
+            <div id="today" class="box"></div>
+            <div id="demo-notice" style="display:none; font-size:11px; color:var(--yellow); text-align:center; margin-top:5px;"></div>
+        </div>
+
+        <!-- ③ 今日のみらいの架け橋レッスン -->
         <div class="section" id="mirakake-today-section">
             <div class="title mirakake-title">🎨 今日のみらいの架け橋レッスン (12:50〜14:20)</div>
             <div id="mirakake-today" class="box"></div>
         </div>
 
-        <!-- 今日のキーワード（授業・登下校含む：常に表示） -->
-        <div class="section" id="today-keywords-section">
-            <div class="title">✨ 今日のキーワード</div>
-            <div id="today" class="box"></div>
-            <div id="demo-notice" class="system-notice"></div>
-        </div>
-
-        <!-- みらかけレッスンスケジュール一覧（常に表示） -->
-        <div class="section" id="mirakake-list-section">
-            <div class="title mirakake-title">📅 7月みらかけ予定表 (〜7/17)</div>
-            <button class="mirakake-accordion-btn" id="accordion-btn" onclick="toggleMirakakeList()">
-                <span>📋 全ての日程と教室をみる</span>
-                <span id="accordion-icon">▼</span>
+        <!-- ④ キーワード一覧 (プルダウン形式) -->
+        <div class="section" id="keyword-list-section">
+            <div class="title">🗂️ キーワード一覧 (過去ログ)</div>
+            <button class="accordion-btn" id="kw-accordion-btn" onclick="toggleKeywordList()">
+                <span>📋 過去のキーワード履歴をみる</span>
+                <span id="kw-accordion-icon">▼</span>
             </button>
-            <div class="mirakake-list-container" id="mirakake-list-container">
-                <div id="mirakake-list" style="padding: 10px 5px;"></div>
+            <div class="accordion-container" id="keyword-list-container">
+                <div id="history" class="history-container" style="padding: 10px 5px;"></div>
             </div>
         </div>
 
-        <div class="section">
-            <div class="title">⏳ 過去ログ (直近3日間)</div>
-            <div id="history" class="history-container"></div>
+        <!-- ⑤ みらかけの日程 (プルダウン形式・今日へ自動スクロール) -->
+        <div class="section" id="mirakake-list-section">
+            <div class="title mirakake-title">📅 みらかけの日程 (7月予定表)</div>
+            <button class="accordion-btn mirakake-btn" id="accordion-btn" onclick="toggleMirakakeList()">
+                <span>📋 全ての日程と教室をみる</span>
+                <span id="accordion-icon">▼</span>
+            </button>
+            <div class="accordion-container" id="mirakake-list-container">
+                <div id="mirakake-list" style="padding: 10px 5px;"></div>
+            </div>
         </div>
 
         <div class="line">
@@ -514,86 +519,28 @@
 </div>
 
 <script>
-    // --- GAS接続URL ---
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxKQU0nkigff43QcWPp9tEEtIFxH57Bn89c3qYH6Q2BZd-_z3L2DszNaPY2Ka6XlweZ/exec";
 
-    // --- 3制限 授業時間割データ ---
     const schedule = [
         { name: "1限", start: "09:20", end: "10:10" },
         { name: "2限", start: "10:20", end: "11:10" },
         { name: "3限", start: "11:20", end: "12:10" }
     ];
 
-    // --- みらいの架け橋レッスン日程表 ---
     const mirakakeSchedule = {
-        "2026-07-01": [
-            { name: "心理学", room: "9B" },
-            { name: "ミュージック", room: "9C" },
-            { name: "ビジネスコミュニケーション", room: "6F" }
-        ],
-        "2026-07-02": [
-            { name: "オープンレッスン", room: "9A" },
-            { name: "書道", room: "9B" },
-            { name: "ダンス", room: "9C" },
-            { name: "検定", room: "6F" }
-        ],
-        "2026-07-03": [
-            { name: "オープンキャンパスプロジェクト", room: "全体" }
-        ],
-        "2026-07-06": [
-            { name: "クラフト", room: "9A" },
-            { name: "ネイル", room: "9B" },
-            { name: "けん玉", room: "9C" },
-            { name: "オープンレッスン", room: "6F" }
-        ],
-        "2026-07-07": [
-            { name: "謎解き", room: "9A" },
-            { name: "ネイル", room: "9B" },
-            { name: "スポーツ", room: "9C" }
-        ],
-        "2026-07-08": [
-            { name: "進路(3年生のみ)", room: "9A" },
-            { name: "心理学", room: "9B" },
-            { name: "ミュージック", room: "9C" },
-            { name: "ビジネスコミュニケーション", room: "6F" }
-        ],
-        "2026-07-09": [
-            { name: "e-sports", room: "9B" },
-            { name: "書道", room: "9C" },
-            { name: "グローバル", room: "6F" }
-        ],
-        "2026-07-10": [
-            { name: "クラフト", room: "9B" },
-            { name: "生徒会", room: "9C" },
-            { name: "オープンレッスン", room: "6F" }
-        ],
-        "2026-07-13": [
-            { name: "クラフト", room: "9A" },
-            { name: "ネイル", room: "9B" },
-            { name: "けん玉", room: "9C" },
-            { name: "進路の架け橋", room: "6F" }
-        ],
-        "2026-07-14": [
-            { name: "イラスト", room: "9A" },
-            { name: "ネイル", room: "9B" },
-            { name: "スポーツ", room: "9C" },
-            { name: "進路の架け橋", room: "6F" }
-        ],
-        "2026-07-15": [
-            { name: "オープンレッスン", room: "9A" },
-            { name: "4コマ漫画", room: "9B" },
-            { name: "ミュージック", room: "9C" },
-            { name: "ビジネスコミュニケーション", room: "6F" }
-        ],
-        "2026-07-16": [
-            { name: "オープンレッスン", room: "9A" },
-            { name: "書道", room: "9B" },
-            { name: "ダンス", room: "9C" },
-            { name: "検定", room: "6F" }
-        ],
-        "2026-07-17": [
-            { name: "✨ みらかけ発表会 ✨", room: "各教室" }
-        ]
+        "2026-07-01": [{ name: "心理学", room: "9B" }, { name: "ミュージック", room: "9C" }, { name: "ビジネスコミュニケーション", room: "6F" }],
+        "2026-07-02": [{ name: "オープンレッスン", room: "9A" }, { name: "書道", room: "9B" }, { name: "ダンス", room: "9C" }, { name: "検定", room: "6F" }],
+        "2026-07-03": [{ name: "オープンキャンパスプロジェクト", room: "全体" }],
+        "2026-07-06": [{ name: "クラフト", room: "9A" }, { name: "ネイル", room: "9B" }, { name: "けん玉", room: "9C" }, { name: "オープンレッスン", room: "6F" }],
+        "2026-07-07": [{ name: "謎解き", room: "9A" }, { name: "ネイル", room: "9B" }, { name: "スポーツ", room: "9C" }],
+        "2026-07-08": [{ name: "進路(3年生のみ)", room: "9A" }, { name: "心理学", room: "9B" }, { name: "ミュージック", room: "9C" }, { name: "ビジネスコミュニケーション", room: "6F" }],
+        "2026-07-09": [{ name: "e-sports", room: "9B" }, { name: "書道", room: "9C" }, { name: "グローバル", room: "6F" }],
+        "2026-07-10": [{ name: "クラフト", room: "9B" }, { name: "生徒会", room: "9C" }, { name: "オープンレッスン", room: "6F" }],
+        "2026-07-13": [{ name: "クラフト", room: "9A" }, { name: "ネイル", room: "9B" }, { name: "けん玉", room: "9C" }, { name: "進路の架け橋", room: "6F" }],
+        "2026-07-14": [{ name: "イラスト", room: "9A" }, { name: "ネイル", room: "9B" }, { name: "スポーツ", room: "9C" }, { name: "進路の架け橋", room: "6F" }],
+        "2026-07-15": [{ name: "オープンレッスン", room: "9A" }, { name: "4コマ漫画", room: "9B" }, { name: "ミュージック", room: "9C" }, { name: "ビジネスコミュニケーション", room: "6F" }],
+        "2026-07-16": [{ name: "オープンレッスン", room: "9A" }, { name: "書道", room: "9B" }, { name: "ダンス", room: "9C" }, { name: "検定", room: "6F" }],
+        "2026-07-17": [{ name: "✨ みらかけ発表会 ✨", room: "各教室" }]
     };
 
     const radius = 110;
@@ -621,7 +568,6 @@
         return `${y}-${m}-${d}`;
     }
 
-    // --- タイマー計算処理 ---
     function tick() {
         const now = new Date();
         const dayOfWeek = now.getDay();
@@ -638,7 +584,6 @@
         let isFinished = false;
         let isSleepTime = false;
 
-        // 【修正】夜21:00以降 〜 翌朝5:00までをお休み（はよ寝ろ）モードとする
         if (nowSec >= 21 * 3600 || nowSec < 5 * 3600) {
             isSleepTime = true;
         }
@@ -704,29 +649,20 @@
             }
         }
 
-        // 深夜睡眠モードの最優先割込 (21:00以降のみ稼働)
         if (isSleepTime) {
             msg = "💤 夜更かしはサイバーウェアに毒だぞ！";
             rem = "はよ寝ろ！明日に響くぞ！😴";
             progress.style.stroke = "url(#color-sleep)";
-            if (document.querySelector('svg')) {
-                document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--red-glow))";
-            }
+            if (document.querySelector('svg')) document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--red-glow))";
         } else if (isFinished) {
             progress.style.stroke = "url(#color-finished)";
-            if (document.querySelector('svg')) {
-                document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--purple-glow))";
-            }
+            if (document.querySelector('svg')) document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--purple-glow))";
         } else if (isBreak) {
             progress.style.stroke = "url(#color-break)";
-            if (document.querySelector('svg')) {
-                document.querySelector('svg').style.filter = "drop-shadow(0 0 10px rgba(59, 130, 246, 0.4))";
-            }
+            if (document.querySelector('svg')) document.querySelector('svg').style.filter = "drop-shadow(0 0 10px rgba(59, 130, 246, 0.4))";
         } else {
             progress.style.stroke = "url(#color-class)";
-            if (document.querySelector('svg')) {
-                document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--cyan-glow))";
-            }
+            if (document.querySelector('svg')) document.querySelector('svg').style.filter = "drop-shadow(0 0 10px var(--cyan-glow))";
         }
 
         statusEl.textContent = msg;
@@ -739,24 +675,19 @@
             remainEl.classList.remove("flash");
         }
 
-        // --- 14:20（みらかけレッスン終了時刻）に合わせたセクション制御 ---
         const mirakakeSection = document.getElementById("mirakake-today-section");
-        const lastLessonEndSec = sec(schedule[schedule.length - 1].end); // 12:10
-        const mirakakeLimitSec = 14 * 3600 + 20 * 60; // 14:20
+        const lastLessonEndSec = sec(schedule[schedule.length - 1].end); 
+        const mirakakeLimitSec = 14 * 3600 + 20 * 60; 
 
-        // お疲れ様コメントは12:10〜14:20の間、平日のみ表示（みらかけ終了まで表示）
         if (nowSec >= lastLessonEndSec && nowSec < mirakakeLimitSec && dayOfWeek !== 0 && dayOfWeek !== 6) {
             if (afterSchoolCard) {
                 afterSchoolCard.classList.add("active");
                 afterSchoolText.textContent = "通常授業お疲れ様でした！この後は12:50から始まる「みらいの架け橋レッスン」を楽しみましょう！✨";
             }
         } else {
-            if (afterSchoolCard) {
-                afterSchoolCard.classList.remove("active");
-            }
+            if (afterSchoolCard) afterSchoolCard.classList.remove("active");
         }
 
-        // 今日のみらかけセクションも14:20を過ぎたら非表示に制御
         if (mirakakeSection) {
             if (nowSec >= mirakakeLimitSec || dayOfWeek === 0 || dayOfWeek === 6) {
                 mirakakeSection.classList.add("hidden-section");
@@ -766,17 +697,47 @@
         }
     }
 
+    function toggleKeywordList() {
+        const container = document.getElementById("keyword-list-container");
+        const icon = document.getElementById("kw-accordion-icon");
+        if (container.classList.contains("open")) {
+            container.classList.remove("open");
+            icon.textContent = "▼";
+        } else {
+            container.classList.add("open");
+            icon.textContent = "▲";
+        }
+    }
+
+    // みらかけの日程アコーディオン制御（開いた瞬間今日へジャンプ）
+    function toggleMirakakeList() {
+        const container = document.getElementById("mirakake-list-container");
+        const icon = document.getElementById("accordion-icon");
+        if (container.classList.contains("open")) {
+            container.classList.remove("open");
+            icon.textContent = "▼";
+        } else {
+            container.classList.add("open");
+            icon.textContent = "▲";
+
+            // アコーディオンの展開アニメーション完了後に今日の要素を捉えてスクロール
+            setTimeout(() => {
+                const todayBlock = document.getElementById("mirakake-target-today");
+                if (todayBlock) {
+                    todayBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 150);
+        }
+    }
+
     function parseItemDate(dateInput) {
         if (!dateInput) return "";
         let d = new Date(dateInput);
-        if (isNaN(d.getTime())) {
-            d = new Date(String(dateInput).replace(/\//g, '-'));
-        }
+        if (isNaN(d.getTime())) d = new Date(String(dateInput).replace(/\//g, '-'));
         if (isNaN(d.getTime())) return "";
         return formatDateLocal(d);
     }
 
-    // --- みらかけ表示処理 ---
     function loadMirakake() {
         const todayStr = formatDateLocal(new Date());
         const todayBox = document.getElementById("mirakake-today");
@@ -801,10 +762,8 @@
                             <span class="badge mirakake">🎨 みらかけ</span>
                             <span class="keyword-date">本日</span>
                         </div>
-                        <div class="keyword-body" style="font-size: 13px; margin-top: 4px;">
-                            ${item.name}
-                        </div>
-                        <div class="keyword-footer" style="font-size: 10px; margin-top: 6px; padding-top: 4px;">
+                        <div class="keyword-body" style="font-size: 13px; margin-top: 4px;">${item.name}</div>
+                        <div class="keyword-footer" style="font-size: 10px; margin-top: 6px; padding-top: 4px; display:flex; justify-content:space-between; color:var(--text-muted); border-top:1px solid rgba(255,255,255,0.04)">
                             <span>教室: <strong>${item.room}</strong></span>
                             <span>⏰ 12:50〜14:20</span>
                         </div>
@@ -812,11 +771,7 @@
                 `;
             });
         } else {
-            todayHtml = `
-                <div class="keyword" style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 10px; font-size: 11px;">
-                    本日のみらいの架け橋レッスンの予定はありません。
-                </div>
-            `;
+            todayHtml = `<div class="keyword" style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 10px; font-size: 11px;">本日のみらいの架け橋レッスンの予定はありません。</div>`;
         }
         if (todayBox) todayBox.innerHTML = todayHtml;
 
@@ -827,9 +782,14 @@
             const formattedDate = dateStr.replace(/-/g, '/');
             const dayList = mirakakeSchedule[dateStr];
             
+            // 今日の一覧ブロックにスクロールターゲット用のIDを付与
+            const isToday = (dateStr === todayStr);
+            const idAttr = isToday ? 'id="mirakake-target-today"' : '';
+            const highlightStyle = isToday ? 'background: rgba(168, 85, 247, 0.08); border-left-width: 5px;' : '';
+            
             listHtml += `
-                <div class="mirakake-day-block">
-                    <div class="mirakake-day-date">📅 ${formattedDate}</div>
+                <div class="mirakake-day-block" ${idAttr} style="${highlightStyle}">
+                    <div class="mirakake-day-date">📅 ${formattedDate} ${isToday ? '⭐️本日' : ''}</div>
                     <div class="mirakake-grid-compact">
             `;
             
@@ -848,67 +808,32 @@
         if (listEl) listEl.innerHTML = listHtml;
     }
 
-    function toggleMirakakeList() {
-        const container = document.getElementById("mirakake-list-container");
-        const icon = document.getElementById("accordion-icon");
-        if (container.classList.contains("open")) {
-            container.classList.remove("open");
-            icon.textContent = "▼";
-        } else {
-            container.classList.add("open");
-            icon.textContent = "▲";
-        }
-    }
-
-    // --- キーワードデータ読み込み・スプレッドシートの日本語ヘッダーに対応 ---
     async function loadKeywords() {
         const todayBox = document.getElementById("today");
         const historyBox = document.getElementById("history");
         const noticeEl = document.getElementById("demo-notice");
 
         let data = [];
-        let errorDetail = "";
-
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 6000);
-
-            const res = await fetch(GAS_URL, { 
-                method: "GET",
-                signal: controller.signal,
-                headers: { "Accept": "application/json" }
-            });
+            const res = await fetch(GAS_URL, { method: "GET", signal: controller.signal });
             clearTimeout(timeoutId);
-
-            if (!res.ok) {
-                throw new Error(`HTTPエラー: ${res.status}`);
-            }
-
-            const responseText = await res.text();
-            
-            try {
-                data = JSON.parse(responseText);
+            if (res.ok) {
+                data = await res.json();
                 if (noticeEl) noticeEl.style.display = 'none';
-            } catch (jsonErr) {
-                console.error("パース失敗。GAS応答:", responseText);
-                throw new Error("GASがJSON以外のデータを返しました。");
             }
-
         } catch (e) {
-            console.warn("GAS通信オフライン。デモデータをセットします:", e.message);
-            errorDetail = e.message;
             if (noticeEl) {
-                noticeEl.innerHTML = `⚠️ サーバー非同期（デモデータ稼働中）<br><span style="font-size:10px; opacity:0.85;">事由: ${errorDetail}</span>`;
+                noticeEl.innerHTML = `⚠️ サーバー非同期（サンプル稼働中）`;
                 noticeEl.style.display = 'block';
             }
-
             const today = new Date();
-            const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
-
+            const yest = new Date(today); yest.setDate(yest.getDate() - 1);
             data = [
                 { "日付": formatDateLocal(today), "キーワードの種類": "登下校", "登下校": "登校", "登校キーワード": "10366" },
                 { "日付": formatDateLocal(today), "キーワードの種類": "授業", "時間": "1限目", "授業キーワード": "プログラミング基礎" },
-                { "日付": formatDateLocal(yesterday), "キーワードの種類": "登下校", "登下校": "下校", "下校キーワード": "お疲れ様でした！" }
+                { "日付": formatDateLocal(yest), "キーワードの種類": "登下校", "登下校": "下校", "下校キーワード": "お疲れ様でした！" }
             ];
         }
 
@@ -918,7 +843,6 @@
         for (const item of data) {
             const dStr = parseItemDate(item["日付"]);
             if (!dStr) continue;
-
             if (!groups[dStr]) groups[dStr] = [];
             groups[dStr].push(item);
         }
@@ -932,11 +856,7 @@
         if (todayBox) todayBox.innerHTML = todayHTML;
 
         let historyHTML = "";
-        const pastDates = Object.keys(groups)
-            .filter(date => date !== todayStr)
-            .sort()
-            .reverse()
-            .slice(0, 3);
+        const pastDates = Object.keys(groups).filter(date => date !== todayStr).sort().reverse().slice(0, 5);
 
         if (pastDates.length > 0) {
             pastDates.forEach(date => {
@@ -945,61 +865,41 @@
                         <div class="history-day-title">📅 ${date.replace(/-/g, '/')}</div>
                         <div class="box" style="margin-top: 6px;">
                 `;
-                groups[date].forEach(item => {
-                    historyHTML += createCard(item);
-                });
+                groups[date].forEach(item => { historyHTML += createCard(item); });
                 historyHTML += `</div></div>`;
             });
         } else {
-            historyHTML = `<div class="keyword" style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 10px;">過去3日間のデータ履歴はありません</div>`;
+            historyHTML = `<div class="keyword" style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 10px;">過去の履歴データはありません</div>`;
         }
         if (historyBox) historyBox.innerHTML = historyHTML;
     }
 
     function createCard(item) {
-        let label = "その他";
-        let typeClass = "class";
-        let icon = "📝";
-        let rawText = "";
-
+        let label = "その他"; let typeClass = "class"; let icon = "📝"; let rawText = "";
         const type = item["キーワードの種類"];
 
         if (type === "登下校") {
             const mode = item["登下校"];
-            if (mode === "登校") {
-                icon = "🏫"; label = "登校"; typeClass = "in"; rawText = item["登校キーワード"];
-            } else if (mode === "下校") {
-                icon = "🏠"; label = "下校"; typeClass = "out"; rawText = item["下校キーワード"];
-            }
+            if (mode === "登校") { icon = "🏫"; label = "登校"; typeClass = "in"; rawText = item["登校キーワード"]; }
+            else if (mode === "下校") { icon = "🏠"; label = "下校"; typeClass = "out"; rawText = item["下校キーワード"]; }
         } else if (type === "授業") {
             icon = "📚"; label = item["時間"] || "授業"; typeClass = "class"; rawText = item["授業キーワード"];
         }
 
-        let displayText = rawText && String(rawText).trim() !== "" 
-            ? rawText 
-            : `<span class="empty-key">未登録</span>`;
-
+        let displayText = rawText && String(rawText).trim() !== "" ? rawText : `<span class="empty-key">未登録</span>`;
         return `
             <div class="keyword" style="padding: 10px;">
-                <div class="keyword-header">
-                    <span class="badge ${typeClass}">${icon} ${label}</span>
-                </div>
-                <div class="keyword-body" style="font-size: 13px; margin-top: 4px;">
-                    ${displayText}
-                </div>
+                <div class="keyword-header"><span class="badge ${typeClass}">${icon} ${label}</span></div>
+                <div class="keyword-body" style="font-size: 13px; margin-top: 4px;">${displayText}</div>
             </div>
         `;
     }
 
-    // 初回起動
     tick();
     loadKeywords();
     loadMirakake();
-
-    // 定期アップデート
     setInterval(tick, 1000);
     setInterval(loadKeywords, 45000);
 </script>
 </body>
 </html>
-
