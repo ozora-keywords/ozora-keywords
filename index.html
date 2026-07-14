@@ -305,7 +305,7 @@
         <!-- ⑤ みらかけの日程 (プルダウン形式) -->
         <div class="section" id="mirakake-list-section">
             <div class="title mirakake-title">📅 みらかけの日程 (7月予定表)</div>
-            <button class="accordion-btn" id="accordion-btn" onclick="toggleMirakakeList()">
+            <button class="accordion-btn mirakake-btn" id="accordion-btn" onclick="toggleMirakakeList()">
                 <span>📋 全ての日程と教室をみる</span>
                 <span id="accordion-icon">▼</span>
             </button>
@@ -341,12 +341,21 @@
         { name: "3限", start: "11:20", end: "12:10" }
     ];
 
+    // ⭐ 画像の予定表通りにデータを完全修正しました
     const mirakakeSchedule = {
-        "2026-07-13": [{ name: "クラフト", room: "9A" }, { name: "ネイル", room: "9B" }],
-        "2026-07-14": [{ name: "イラスト", room: "9A" }, { name: "ネイル", room: "9B" }, { name: "スポーツ", room: "9C" }],
-        "2026-07-15": [{ name: "オープンレッスン", room: "9A" }, { name: "4コマ漫画", room: "9B" }],
-        "2026-07-16": [{ name: "オープンレッスン", room: "9A" }, { name: "書道", room: "9B" }],
-        "2026-07-17": [{ name: "✨ みらかけ発表会 ✨", room: "各教室" }]
+        "2026-07-01": [{ name: "心理学", room: "9B" }, { name: "ミュージック", room: "9C" }, { name: "ビジネスコミュニケーション", room: "6F" }],
+        "2026-07-02": [{ name: "オープンレッスン", room: "9A" }, { name: "書道", room: "9B" }, { name: "ダンス", room: "9C" }, { name: "検定", room: "6F" }],
+        "2026-07-03": [{ name: "オープンキャンパスプロジェクト", room: "全体" }],
+        "2026-07-06": [{ name: "クラフト", room: "9A" }, { name: "ネイル", room: "9B" }, { name: "けん玉", room: "9C" }, { name: "オープンレッスン", room: "6F" }],
+        "2026-07-07": [{ name: "謎解き", room: "9A" }, { name: "ネイル", room: "9B" }, { name: "スポーツ", room: "9C" }],
+        "2026-07-08": [{ name: "進路 (3年生のみ)", room: "9A" }, { name: "心理学", room: "9B" }, { name: "ミュージック", room: "9C" }, { name: "ビジネスコミュニケーション", room: "6F" }],
+        "2026-07-09": [{ name: "e-sports", room: "9B" }, { name: "書道", room: "9C" }, { name: "グローバル", room: "6F" }],
+        "2026-07-10": [{ name: "クラフト", room: "9B" }, { name: "生徒会", room: "9C" }, { name: "オープンレッスン", room: "6F" }],
+        "2026-07-13": [{ name: "クラフト", room: "9A" }, { name: "ネイル", room: "9B" }, { name: "けん玉", room: "9C" }, { name: "進路の架け橋", room: "6F" }],
+        "2026-07-14": [{ name: "イラスト", room: "9A" }, { name: "ネイル", room: "9B" }, { name: "スポーツ", room: "9C" }, { name: "進路の架け橋", room: "6F" }],
+        "2026-07-15": [{ name: "オープンレッスン", room: "9A" }, { name: "4コマ漫画", room: "9B" }, { name: "ミュージック", room: "9C" }, { name: "ビジネスコミュニケーション", room: "6F" }],
+        "2026-07-16": [{ name: "オープンレッスン", room: "9A" }, { name: "書道", room: "9B" }, { name: "ダンス", room: "9C" }, { name: "検定", room: "6F" }],
+        "2026-07-17": [{ name: "みらかけ発表会", room: "全体" }]
     };
 
     // アクセシビリティ：テーマ変更
@@ -530,7 +539,6 @@
             const res = await fetch(GAS_URL);
             if (res.ok) data = await res.json();
         } catch (e) {
-            // オフライン・デモデータ
             const today = formatDateLocal(new Date());
             data = [
                 { "日付": today, "キーワードの種類": "授業", "時間": "2限目", "授業キーワード": "数学Ⅱ" },
@@ -548,7 +556,6 @@
             if (dStr) { if (!groups[dStr]) groups[dStr] = []; groups[dStr].push(item); }
         });
 
-        // ⭐ 【重要】今日のキーワードを「登校 ➔ 1限目 ➔ 2限目 ➔ 3限目 ➔ 下校」の順に強制ソートする定義
         const orderMap = { "登校": 1, "1限目": 2, "2限目": 3, "3限目": 4, "下校": 5 };
         function getSortOrder(item) {
             if (item["キーワードの種類"] === "登下校") return orderMap[item["登下校"]] || 99;
@@ -558,7 +565,6 @@
 
         let todayHTML = "";
         if (groups[todayStr]) {
-            // スプレッドシートの並び順に関係なく自動で並び替え
             groups[todayStr].sort((a, b) => getSortOrder(a) - getSortOrder(b));
             groups[todayStr].forEach(item => { todayHTML += createCard(item); });
         } else {
