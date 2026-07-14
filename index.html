@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>おおぞらボックス〜キーワード一覧・みらかけ日程</title>
+    <title>授業タイマー＆キーワード・みらかけ日程</title>
     <style>
         :root {
             --bg-dark: #030712;
@@ -448,4 +448,227 @@
 
         if (id.trim() === "anko. kurorabu" && pass === "Mitarashidango06") {
             alert("認証に成功しました。管理者パネルを開きます。");
-            document.getElementById("admin-panel").style.display = 
+            document.getElementById("admin-panel").style.display = "block";
+        } else {
+            alert("IDまたはパスワードが違います。");
+        }
+    }
+
+    const radius = 110;
+    const circleLength = 2 * Math.PI * radius;
+    const progress = document.getElementById("progress");
+    const dateEl = document.getElementById("date");
+    const clockEl = document.getElementById("clock");
+    const statusEl = document.getElementById("status");
+    const remainEl = document.getElementById("remain");
+    const afterSchoolCard = document.getElementById("after-school-msg");
+    const afterSchoolText = document.getElementById("after-school-text");
+
+    progress.style.strokeDasharray = circleLength;
+    progress.style.strokeDashoffset = circleLength;
+
+    function sec(t) {
+        let [h, m] = t.split(":").map(Number);
+        return h * 3600 + m * 60;
+    }
+
+    function formatDateLocal(dateObj) {
+        const y = dateObj.getFullYear();
+        const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const d = String(dateObj.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+    }
+
+    function tick() {
+        const now = new Date();
+        const dayOfWeek = now.getDay();
+        dateEl.textContent = now.toLocaleDateString("ja-JP", { dateStyle: "full" });
+        clockEl.textContent = now.toLocaleTimeString("ja-JP");
+        const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+        let msg = "🎉 今日の授業はすべて終了しました"; let rem = "お疲れ様でした！";
+        let percent = 100; let left = 99999; let isBreak = false; let isFinished = false; let isSleepTime = false;
+
+        if (nowSec >= 21 * 3600 || nowSec < 5 * 3600) isSleepTime = true;
+
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+            msg = "🍵 休日のため授業はありません"; rem = "素敵な週末を！"; isFinished = true;
+        } else {
+            const lastLessonEnd = sec(schedule[schedule.length - 1].end);
+            if (nowSec >= lastLessonEnd) {
+                isFinished = true;
+                if (nowSec < 12 * 3600 + 50 * 60) {
+                    const diffSec = (12 * 3600 + 50 * 60) - nowSec;
+                    msg = "⚡️ 放課後 / お昼休み"; rem = `みらかけ開始まで ${Math.floor(diffSec / 60)}分 ${diffSec % 60}秒`;
+                } else if (nowSec < 14 * 3600 + 20 * 60) {
+                    msg = "✨ みらいの架け橋レッスン実施中"; rem = "14:20 終了予定";
+                } else if (nowSec < 18 * 3600) {
+                    msg = "🌅 放課後 / 下校時間"; rem = "帰り道、気をつけてね！";
+                } else if (!isSleepTime) {
+                    msg = "🌌 今日も一日お疲れ様でした！"; rem = "しっかり体を休めましょう";
+                }
+            } else {
+                for (let i = 0; i < schedule.length; i++) {
+                    const current = schedule[i]; const start = sec(current.start); const end = sec(current.end);
+                    if (nowSec < start) {
+                        if (i > 0 && nowSec >= sec(schedule[i - 1].end)) {
+                            const breakStart = sec(schedule[i - 1].end); left = start - nowSec;
+                            msg = `☕️ 休み時間 (${schedule[i - 1].name} ➔ ${current.name})`;
+                            rem = `次まで ${Math.floor(left / 60)}分 ${String(left % 60).padStart(2, "0")}秒`;
+                            percent = ((nowSec - breakStart) / (start - breakStart)) * 100; isBreak = true;
+                        } else {
+                            left = start - nowSec; msg = `🕒 スタンドバイ: ${current.name}`;
+                            rem = `開始まで ${Math.floor(left / 60)}分 ${left % 60}秒`; percent = 0;
+                        }
+                        break;
+                    }
+                    if (nowSec >= start && nowSec < end) {
+                        left = end - nowSec; msg = `⚡️ ${current.name} 進行中`;
+                        rem = `残り ${Math.floor(left / 60)}分 ${left % 60}秒`; percent = ((nowSec - start) / (end - start)) * 100;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (isSleepTime) {
+            msg = "💤 夜更かしはサイバーウェアに毒だぞ！"; rem = "はよ寝ろ！明日に響くぞ！😴";
+            progress.style.stroke = "url(#color-sleep)";
+        } else if (isFinished) { progress.style.stroke = "url(#color-finished)"; }
+        else if (isBreak) { progress.style.stroke = "url(#color-break)"; }
+        else { progress.style.stroke = "url(#color-class)"; }
+
+        statusEl.textContent = msg; remainEl.textContent = rem;
+        progress.style.strokeDashoffset = Math.max(0, Math.min(circleLength, circleLength - (circleLength * percent / 100)));
+
+        const mirakakeSection = document.getElementById("mirakake-today-section");
+        if (nowSec >= sec("12:10") && nowSec < sec("14:20") && dayOfWeek !== 0 && dayOfWeek !== 6) {
+            if (afterSchoolCard) { afterSchoolCard.classList.add("active"); afterSchoolText.textContent = "通常授業お疲れ様でした！この後はみらかけを楽しみましょう！✨"; }
+        } else { if (afterSchoolCard) afterSchoolCard.classList.remove("active"); }
+
+        if (mirakakeSection) {
+            if (nowSec >= sec("14:20") || dayOfWeek === 0 || dayOfWeek === 6) mirakakeSection.classList.add("hidden-section");
+            else mirakakeSection.classList.remove("hidden-section");
+        }
+    }
+
+    function toggleKeywordList() {
+        const container = document.getElementById("keyword-list-container");
+        document.getElementById("kw-accordion-icon").textContent = container.classList.toggle("open") ? "▲" : "▼";
+    }
+
+    function toggleMirakakeList() {
+        const container = document.getElementById("mirakake-list-container");
+        const isOpen = container.classList.toggle("open");
+        document.getElementById("accordion-icon").textContent = isOpen ? "▲" : "▼";
+        if (isOpen) {
+            setTimeout(() => {
+                const todayBlock = document.getElementById("mirakake-target-today");
+                if (todayBlock) todayBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 150);
+        }
+    }
+
+    function parseItemDate(dateInput) {
+        if (!dateInput) return "";
+        let d = new Date(dateInput);
+        if (isNaN(d.getTime())) d = new Date(String(dateInput).replace(/\//g, '-'));
+        return isNaN(d.getTime()) ? "" : formatDateLocal(d);
+    }
+
+    function loadMirakake() {
+        const todayStr = formatDateLocal(new Date());
+        const todayBox = document.getElementById("mirakake-today");
+        const listEl = document.getElementById("mirakake-list");
+
+        let todayHtml = "";
+        if (mirakakeSchedule[todayStr]) {
+            mirakakeSchedule[todayStr].forEach(item => {
+                todayHtml += `<div class="keyword" style="border-color:var(--purple);"><div class="keyword-header"><span class="badge mirakake">🎨 みらかけ</span></div><div class="keyword-body">${item.name}</div><div style="font-size:10px; color:var(--text-muted)">部屋: ${item.room}</div></div>`;
+            });
+        } else {
+            todayHtml = `<div class="keyword" style="grid-column:1/-1; text-align:center; color:var(--text-muted); font-size:11px;">本日の予定はありません</div>`;
+        }
+        todayBox.innerHTML = todayHtml;
+
+        let listHtml = "";
+        Object.keys(mirakakeSchedule).sort().forEach(dateStr => {
+            const isToday = (dateStr === todayStr);
+            listHtml += `<div class="mirakake-day-block" ${isToday ? 'id="mirakake-target-today" style="background:rgba(168,85,247,0.1)"' : ''}><div class="mirakake-day-date">📅 ${dateStr.replace(/-/g,'/')} ${isToday?'⭐️本日':''}</div><div class="mirakake-grid-compact">`;
+            mirakakeSchedule[dateStr].forEach(item => {
+                listHtml += `<div class="mirakake-item-compact"><div class="mirakake-item-name">${item.name}</div><div class="mirakake-item-room">🚪 ${item.room}</div></div>`;
+            });
+            listHtml += `</div></div>`;
+        });
+        listEl.innerHTML = listHtml;
+    }
+
+    async function loadKeywords() {
+        const todayBox = document.getElementById("today");
+        const historyBox = document.getElementById("history");
+        let data = [];
+
+        try {
+            const res = await fetch(GAS_URL);
+            if (res.ok) data = await res.json();
+        } catch (e) {
+            const today = formatDateLocal(new Date());
+            data = [
+                { "日付": today, "キーワードの種類": "授業", "時間": "2限目", "授業キーワード": "数学Ⅱ" },
+                { "日付": today, "キーワードの種類": "登下校", "登下校": "登校", "登校キーワード": "88412" },
+                { "日付": today, "キーワードの種類": "授業", "時間": "1限目", "授業キーワード": "現代の国語" },
+                { "日付": today, "キーワードの種類": "登下校", "登下校": "下校", "下校キーワード": "14:30完全下校" },
+                { "日付": today, "キーワードの種類": "授業", "時間": "3限目", "授業キーワード": "英語コミュニケーション" }
+            ];
+        }
+
+        const todayStr = formatDateLocal(new Date());
+        const groups = {};
+        data.forEach(item => {
+            const dStr = parseItemDate(item["日付"]);
+            if (dStr) { if (!groups[dStr]) groups[dStr] = []; groups[dStr].push(item); }
+        });
+
+        const orderMap = { "登校": 1, "1限目": 2, "2限目": 3, "3限目": 4, "下校": 5 };
+        function getSortOrder(item) {
+            if (item["キーワードの種類"] === "登下校") return orderMap[item["登下校"]] || 99;
+            if (item["キーワードの種類"] === "授業") return orderMap[item["時間"]] || 99;
+            return 99;
+        }
+
+        let todayHTML = "";
+        if (groups[todayStr]) {
+            groups[todayStr].sort((a, b) => getSortOrder(a) - getSortOrder(b));
+            groups[todayStr].forEach(item => { todayHTML += createCard(item); });
+        } else {
+            todayHTML = `<div class="keyword" style="grid-column:1/-1; text-align:center; color:var(--text-muted); font-size:11px;">本日のキーワードは未登録です</div>`;
+        }
+        todayBox.innerHTML = todayHTML;
+
+        let historyHTML = "";
+        Object.keys(groups).filter(d => d !== todayStr).sort().reverse().slice(0, 3).forEach(date => {
+            historyHTML += `<div><div class="history-day-title">📅 ${date.replace(/-/g, '/')}</div><div class="box" style="margin-top:6px;">`;
+            groups[date].sort((a, b) => getSortOrder(a) - getSortOrder(b)).forEach(item => { historyHTML += createCard(item); });
+            historyHTML += `</div></div>`;
+        });
+        historyBox.innerHTML = historyHTML || `<div class="keyword" style="text-align:center; color:var(--text-muted); font-size:11px;">履歴はありません</div>`;
+    }
+
+    function createCard(item) {
+        let label = "その他"; let typeClass = "class"; let icon = "📝"; let rawText = "";
+        if (item["キーワードの種類"] === "登下校") {
+            if (item["登下校"] === "登校") { icon = "🏫"; label = "登校"; typeClass = "in"; rawText = item["登校キーワード"]; }
+            else { icon = "🏠"; label = "下校"; typeClass = "out"; rawText = item["下校キーワード"]; }
+        } else {
+            icon = "📚"; label = item["時間"] || "授業"; typeClass = "class"; rawText = item["授業キーワード"];
+        }
+        return `<div class="keyword"><div class="keyword-header"><span class="badge ${typeClass}">${icon} ${label}</span></div><div class="keyword-body">${rawText || '<span class="empty-key">未登録</span>'}</div></div>`;
+    }
+
+    tick(); loadKeywords(); loadMirakake();
+    setInterval(tick, 1000); setInterval(loadKeywords, 45000);
+</script>
+</body>
+</html>
+
+```
