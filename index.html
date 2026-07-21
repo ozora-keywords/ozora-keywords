@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>授業タイマー＆キーワード・みらかけ日程</title>
+    <title>NEXUS CLOCK // 授業タイマー & みらかけナビ</title>
     <style>
         :root {
             --bg-dark: #030712;
@@ -19,6 +19,7 @@
             --red-glow: rgba(239, 68, 68, 0.4);
             --purple: #a855f7;
             --purple-glow: rgba(168, 85, 247, 0.4);
+            --orange: #f97316;
             --text-muted: rgba(156, 163, 175, 0.8);
             --text-main: #f3f4f6;
         }
@@ -191,7 +192,7 @@
             box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);
         }
 
-        /* ーーー タイマーのみ表示（フォーカスモード）のCSS制御 ーーー */
+        /* タイマーのみ表示（フォーカスモード）のCSS制御 */
         body.focus-mode .accessibility-bar,
         body.focus-mode h1,
         body.focus-mode .date,
@@ -244,8 +245,102 @@
         .title { font-size: 13px; font-weight: 700; color: var(--cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
         .title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, rgba(6, 182, 212, 0.2), transparent); }
         .title.mirakake-title { color: var(--purple); }
+        .title.news-title { color: var(--orange); }
+        .title.news-title::after { background: linear-gradient(to right, rgba(249, 115, 22, 0.2), transparent); }
 
         .box { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+
+        /* ーーー 夏休みモード専用スタイル ーーー */
+        .summer-container {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        body.summer-vacation-mode .normal-content-group {
+            display: none !important;
+        }
+        body.summer-vacation-mode .summer-container {
+            display: flex !important;
+        }
+
+        .summer-hero {
+            background: radial-gradient(circle at 50% 30%, rgba(249, 115, 22, 0.15), rgba(245, 158, 11, 0.05));
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        .summer-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f97316, #f59e0b);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 12px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .summer-title {
+            font-size: clamp(20px, 5vw, 28px);
+            font-weight: 800;
+            color: #ffffff;
+            margin: 4px 0 12px 0;
+            background: linear-gradient(to right, #fbbf24, #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        body.theme-light .summer-title {
+            background: none;
+            -webkit-text-fill-color: initial;
+            color: #d97706;
+        }
+        .summer-countdown {
+            font-size: clamp(24px, 6vw, 36px);
+            font-weight: 900;
+            color: #fbbf24;
+            letter-spacing: -0.5px;
+            margin: 10px 0;
+        }
+        .summer-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ニュースカード */
+        .news-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        body.theme-light .news-card { background: #f9fafb; border-color: #e5e7eb; }
+        .news-tag {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--orange);
+            background: rgba(249, 115, 22, 0.12);
+            padding: 2px 8px;
+            border-radius: 10px;
+            width: fit-content;
+        }
+        .news-headline {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+        .news-detail {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
 
         /* キーワードカード */
         .keyword {
@@ -305,74 +400,96 @@
     </div>
 
     <div class="card">
-        <!-- ① 授業タイマー -->
-        <h1>📚 授業タイマー＆キーワード・みらかけ日程</h1>
+        <!-- ヘッダー -->
+        <h1>📚 NEXUS CLOCK // 授業タイマー</h1>
         <div class="date" id="date"></div>
 
-        <div class="timer">
-            <div class="circle">
-                <svg viewBox="0 0 280 280">
-                    <defs>
-                        <linearGradient id="color-class"><stop offset="0%" stop-color="#06b6d4"/><stop offset="50%" stop-color="#10b981"/><stop offset="100%" stop-color="#ef4444"/></linearGradient>
-                        <linearGradient id="color-break"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient>
-                        <linearGradient id="color-finished"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#10b981"/></linearGradient>
-                        <linearGradient id="color-sleep"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#a855f7"/></linearGradient>
-                    </defs>
-                    <circle class="bg-circle" cx="140" cy="140" r="110"/>
-                    <circle id="progress" class="progress-circle" cx="140" cy="140" r="110"/>
-                </svg>
-                <div class="center">
-                    <div class="clock" id="clock">00:00:00</div>
-                    <div class="remain" id="remain">ONLINE</div>
+        <!-- ＝＝＝ 通常期間用コンテンツグループ ＝＝＝ -->
+        <div class="normal-content-group" id="normal-content-group">
+            <!-- ① 授業タイマー -->
+            <div class="timer">
+                <div class="circle">
+                    <svg viewBox="0 0 280 280">
+                        <defs>
+                            <linearGradient id="color-class"><stop offset="0%" stop-color="#06b6d4"/><stop offset="50%" stop-color="#10b981"/><stop offset="100%" stop-color="#ef4444"/></linearGradient>
+                            <linearGradient id="color-break"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient>
+                            <linearGradient id="color-finished"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#10b981"/></linearGradient>
+                            <linearGradient id="color-sleep"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#a855f7"/></linearGradient>
+                        </defs>
+                        <circle class="bg-circle" cx="140" cy="140" r="110"/>
+                        <circle id="progress" class="progress-circle" cx="140" cy="140" r="110"/>
+                    </svg>
+                    <div class="center">
+                        <div class="clock" id="clock">00:00:00</div>
+                        <div class="remain" id="remain">ONLINE</div>
+                    </div>
+                </div>
+            </div>
+            <div class="status" id="status">SYSTEM READY</div>
+
+            <!-- 📺 タイマー全画面（フォーカス）切替トグルボタン -->
+            <div class="focus-toggle-container">
+                <button class="focus-btn" id="focus-toggle-btn" onclick="toggleFocusMode()">📺 タイマーのみ表示</button>
+            </div>
+
+            <div class="after-school-card" id="after-school-msg">
+                <div class="after-school-title">✨ TODAY'S LESSONS COMPLETED ✨</div>
+                <div class="after-school-text" id="after-school-text"></div>
+            </div>
+
+            <!-- ② 今日のキーワード (固定配列順) -->
+            <div class="section" id="today-keywords-section">
+                <div class="title">✨ 今日のキーワード</div>
+                <div id="today" class="box"></div>
+                <div id="demo-notice" style="display:none; font-size:11px; color:var(--yellow); text-align:center; margin-top:5px;"></div>
+            </div>
+
+            <!-- ③ 今日のみらいの架け橋レッスン -->
+            <div class="section" id="mirakake-today-section">
+                <div class="title mirakake-title">🎨 今日のみらいの架け橋レッスン (12:50〜14:20)</div>
+                <div id="mirakake-today" class="box"></div>
+            </div>
+
+            <!-- ④ キーワード一覧 (過去ログ) -->
+            <div class="section" id="keyword-list-section">
+                <div class="title">🗂️ キーワード一覧 (過去ログ)</div>
+                <button class="accordion-btn" id="kw-accordion-btn" onclick="toggleKeywordList()">
+                    <span>📋 過去のキーワード履歴をみる</span>
+                    <span id="kw-accordion-icon">▼</span>
+                </button>
+                <div class="accordion-container" id="keyword-list-container">
+                    <div id="history" style="padding: 10px 5px; display:flex; flex-direction:column; gap:12px;"></div>
+                </div>
+            </div>
+
+            <!-- ⑤ みらかけの日程 (予定表一覧) -->
+            <div class="section" id="mirakake-list-section">
+                <div class="title mirakake-title">📅 みらかけの日程 (7月予定表)</div>
+                <button class="accordion-btn mirakake-btn" id="accordion-btn" onclick="toggleMirakakeList()">
+                    <span>📋 全ての日程と教室をみる</span>
+                    <span id="accordion-icon">▼</span>
+                </button>
+                <div class="accordion-container" id="mirakake-list-container">
+                    <div id="mirakake-list" style="padding: 10px 5px;"></div>
                 </div>
             </div>
         </div>
-        <div class="status" id="status">SYSTEM READY</div>
 
-        <!-- 📺 タイマー全画面（フォーカス）切替トグルボタン -->
-        <div class="focus-toggle-container">
-            <button class="focus-btn" id="focus-toggle-btn" onclick="toggleFocusMode()">📺 タイマーのみ表示</button>
-        </div>
-
-        <div class="after-school-card" id="after-school-msg">
-            <div class="after-school-title">✨ TODAY'S LESSONS COMPLETED ✨</div>
-            <div class="after-school-text" id="after-school-text"></div>
-        </div>
-
-        <!-- ② 今日のキーワード (固定配列順) -->
-        <div class="section" id="today-keywords-section">
-            <div class="title">✨ 今日のキーワード</div>
-            <div id="today" class="box"></div>
-            <div id="demo-notice" style="display:none; font-size:11px; color:var(--yellow); text-align:center; margin-top:5px;"></div>
-        </div>
-
-        <!-- ③ 今日のみらいの架け橋レッスン -->
-        <div class="section" id="mirakake-today-section">
-            <div class="title mirakake-title">🎨 今日のみらいの架け橋レッスン (12:50〜14:20)</div>
-            <div id="mirakake-today" class="box"></div>
-        </div>
-
-        <!-- ④ キーワード一覧 (過去ログ) -->
-        <div class="section" id="keyword-list-section">
-            <div class="title">🗂️ キーワード一覧 (過去ログ)</div>
-            <button class="accordion-btn" id="kw-accordion-btn" onclick="toggleKeywordList()">
-                <span>📋 過去のキーワード履歴をみる</span>
-                <span id="kw-accordion-icon">▼</span>
-            </button>
-            <div class="accordion-container" id="keyword-list-container">
-                <div id="history" style="padding: 10px 5px; display:flex; flex-direction:column; gap:12px;"></div>
+        <!-- ＝＝＝ 🌻 夏休み期間中（7/18〜8/23）専用表示エリア ＝＝＝ -->
+        <div class="summer-container" id="summer-container">
+            <div class="summer-hero">
+                <span class="summer-badge">SUMMER VACATION MODE</span>
+                <div class="summer-title">🌻 夏休みの特別時間割 🌴</div>
+                <p style="font-size:12px; color:var(--text-muted); margin:0;">現在校舎は夏休み期間中です。通常授業および「みらかけ」はお休みとなります。</p>
+                <div class="summer-countdown" id="summer-countdown">夏休み最終日まで あと - 日</div>
+                <div class="summer-sub" id="summer-sub-info">新学期（8月24日）まで、体調に気をつけて有意義な休日をお過ごしください！</div>
             </div>
-        </div>
 
-        <!-- ⑤ みらかけの日程 (予定表一覧) -->
-        <div class="section" id="mirakake-list-section">
-            <div class="title mirakake-title">📅 みらかけの日程 (7月予定表)</div>
-            <button class="accordion-btn mirakake-btn" id="accordion-btn" onclick="toggleMirakakeList()">
-                <span>📋 全ての日程と教室をみる</span>
-                <span id="accordion-icon">▼</span>
-            </button>
-            <div class="accordion-container" id="mirakake-list-container">
-                <div id="mirakake-list" style="padding: 10px 5px;"></div>
+            <div class="section">
+                <div class="title news-title">📰 今日のデイリー・ニュース & トピックス</div>
+                <div id="summer-news-box">
+                    <!-- JavaScriptで日替わり生成 -->
+                </div>
             </div>
         </div>
 
@@ -419,9 +536,19 @@
         "2026-07-17": [{ name: "みらかけ発表会", room: "全体" }]
     };
 
+    // 日替わりニュース・トリビアデータバンク
+    const dailyNewsDb = [
+        { tag: "💡 今日の豆知識", headline: "夏休みにエアコンの冷房効率を最大にする秘訣", detail: "室風向きを「水平」に設定し、扇風機やサーキュレーターを上向きに回すと部屋全体の温度が一気に均一になります！" },
+        { tag: "🚀 テック＆未来", headline: "AI時代の夏休みの宿題・自由研究のトレンド", detail: "最近の自由研究では、プログラミングや生成AIを使って「自分だけのWebアプリを作る」挑戦をする高校生が急増中！" },
+        { tag: "🌊 季節のアドバイス", headline: "こまめな水分＆塩分補給を忘れずに", detail: "のどが渇く前に水分を補給するのがポイント。室内でも熱中症対策を万全にして有意義な夏休みを！" },
+        { tag: "📚 おすすめの過ごし方", headline: "読書や新しい趣味をひとつ始めてみよう", detail: "普段はなかなか時間を取れない長編小説や、動画編集・イラスト制作など新しいスキルに触れる絶好のチャンスです。" },
+        { tag: "🎮 リフレッシュ", headline: "ゲームやデジタル機器の「画面休憩」も大切に", detail: "1時間画面を見たら5分〜10分は遠くの景色を見て目を休めましょう。目の疲労回復が集中力長持ちの秘訣！" },
+        { tag: "✨ 今日の一言", headline: "「小さな継続が大きな成果を作る」", detail: "1日15分でも自分の好きなことや勉強を続けると、夏休みが終わる頃には大きな成長につながっています！" }
+    ];
+
     // アクセシビリティ：テーマ変更
     function changeTheme(theme) {
-        document.body.className = '';
+        document.body.classList.remove('theme-dark', 'theme-light', 'theme-highcontrast');
         if(theme !== 'cyber') {
             document.body.classList.add('theme-' + theme);
         }
@@ -463,8 +590,10 @@
     const afterSchoolCard = document.getElementById("after-school-msg");
     const afterSchoolText = document.getElementById("after-school-text");
 
-    progress.style.strokeDasharray = circleLength;
-    progress.style.strokeDashoffset = circleLength;
+    if (progress) {
+        progress.style.strokeDasharray = circleLength;
+        progress.style.strokeDashoffset = circleLength;
+    }
 
     function sec(t) {
         let [h, m] = t.split(":").map(Number);
@@ -478,11 +607,70 @@
         return `${y}-${m}-${d}`;
     }
 
+    // 夏休み期間判定 (毎年 7月18日 〜 8月23日)
+    function checkIsSummerVacation(now) {
+        const m = now.getMonth() + 1; // 1-12
+        const d = now.getDate();
+        
+        if (m === 7 && d >= 18) return true;
+        if (m === 8 && d <= 23) return true;
+        return false;
+    }
+
+    function updateSummerModeUI(now) {
+        const summerEnd = new Date(now.getFullYear(), 7, 23, 23, 59, 59); // 8月23日
+        const diffMs = summerEnd - now;
+        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+        const countdownEl = document.getElementById("summer-countdown");
+        if (countdownEl) {
+            if (diffDays > 0) {
+                countdownEl.textContent = `夏休み最終日まで あと ${diffDays} 日！`;
+            } else if (diffDays === 0) {
+                countdownEl.textContent = `本日が夏休み最終日です！🎉`;
+            } else {
+                countdownEl.textContent = `明日（8月24日）から新学期スタート！`;
+            }
+        }
+
+        // 日替わりニュース表示 (日付シードで日替わりピックアップ)
+        const newsBox = document.getElementById("summer-news-box");
+        if (newsBox) {
+            const daySeed = now.getDate() + now.getMonth();
+            const news1 = dailyNewsDb[daySeed % dailyNewsDb.length];
+            const news2 = dailyNewsDb[(daySeed + 2) % dailyNewsDb.length];
+
+            newsBox.innerHTML = `
+                <div class="news-card">
+                    <span class="news-tag">${news1.tag}</span>
+                    <div class="news-headline">${news1.headline}</div>
+                    <div class="news-detail">${news1.detail}</div>
+                </div>
+                <div class="news-card">
+                    <span class="news-tag">${news2.tag}</span>
+                    <div class="news-headline">${news2.headline}</div>
+                    <div class="news-detail">${news2.detail}</div>
+                </div>
+            `;
+        }
+    }
+
     function tick() {
         const now = new Date();
         const dayOfWeek = now.getDay();
         dateEl.textContent = now.toLocaleDateString("ja-JP", { dateStyle: "full" });
         clockEl.textContent = now.toLocaleTimeString("ja-JP");
+
+        const isSummer = checkIsSummerVacation(now);
+
+        if (isSummer) {
+            document.body.classList.add("summer-vacation-mode");
+            updateSummerModeUI(now);
+            return; // 夏休みモード時は通常のタイマーロジックをスキップ
+        } else {
+            document.body.classList.remove("summer-vacation-mode");
+        }
+
         const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
         let msg = "🎉 今日の授業はすべて終了しました"; let rem = "お疲れ様でした！";
@@ -532,13 +720,13 @@
 
         if (isSleepTime) {
             msg = "💤 夜更かしはサイバーウェアに毒だぞ！"; rem = "はよ寝ろ！明日に響くぞ！😴";
-            progress.style.stroke = "url(#color-sleep)";
-        } else if (isFinished) { progress.style.stroke = "url(#color-finished)"; }
-        else if (isBreak) { progress.style.stroke = "url(#color-break)"; }
-        else { progress.style.stroke = "url(#color-class)"; }
+            if (progress) progress.style.stroke = "url(#color-sleep)";
+        } else if (isFinished) { if (progress) progress.style.stroke = "url(#color-finished)"; }
+        else if (isBreak) { if (progress) progress.style.stroke = "url(#color-break)"; }
+        else { if (progress) progress.style.stroke = "url(#color-class)"; }
 
         statusEl.textContent = msg; remainEl.textContent = rem;
-        progress.style.strokeDashoffset = Math.max(0, Math.min(circleLength, circleLength - (circleLength * percent / 100)));
+        if (progress) progress.style.strokeDashoffset = Math.max(0, Math.min(circleLength, circleLength - (circleLength * percent / 100)));
 
         const mirakakeSection = document.getElementById("mirakake-today-section");
         if (nowSec >= sec("12:10") && nowSec < sec("14:20") && dayOfWeek !== 0 && dayOfWeek !== 6) {
@@ -588,7 +776,7 @@
         } else {
             todayHtml = `<div class="keyword" style="grid-column:1/-1; text-align:center; color:var(--text-muted); font-size:11px;">本日の予定はありません</div>`;
         }
-        todayBox.innerHTML = todayHtml;
+        if (todayBox) todayBox.innerHTML = todayHtml;
 
         let listHtml = "";
         Object.keys(mirakakeSchedule).sort().forEach(dateStr => {
@@ -599,7 +787,7 @@
             });
             listHtml += `</div></div>`;
         });
-        listEl.innerHTML = listHtml;
+        if (listEl) listEl.innerHTML = listHtml;
     }
 
     async function loadKeywords() {
@@ -642,7 +830,7 @@
         } else {
             todayHTML = `<div class="keyword" style="grid-column:1/-1; text-align:center; color:var(--text-muted); font-size:11px;">本日のキーワードは未登録です</div>`;
         }
-        todayBox.innerHTML = todayHTML;
+        if (todayBox) todayBox.innerHTML = todayHTML;
 
         let historyHTML = "";
         Object.keys(groups).filter(d => d !== todayStr).sort().reverse().slice(0, 3).forEach(date => {
@@ -650,7 +838,7 @@
             groups[date].sort((a, b) => getSortOrder(a) - getSortOrder(b)).forEach(item => { historyHTML += createCard(item); });
             historyHTML += `</div></div>`;
         });
-        historyBox.innerHTML = historyHTML || `<div class="keyword" style="text-align:center; color:var(--text-muted); font-size:11px;">履歴はありません</div>`;
+        if (historyBox) historyBox.innerHTML = historyHTML || `<div class="keyword" style="text-align:center; color:var(--text-muted); font-size:11px;">履歴はありません</div>`;
     }
 
     function createCard(item) {
@@ -669,4 +857,3 @@
 </script>
 </body>
 </html>
-
